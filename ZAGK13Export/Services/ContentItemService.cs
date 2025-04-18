@@ -40,7 +40,10 @@ namespace ZAGK13Export.Services
         {
             foreach (var contentItem in GetContentItems().Result)
             {
-                export.ContentItems.Add(ConvertContentItem(contentItem.ClassName, contentItem).Result);
+                var convertedContentItem = ConvertContentItem(contentItem.ClassName, contentItem).Result;
+                if (convertedContentItem != null) {
+                    export.ContentItems.Add(convertedContentItem);
+                }
             }
         }
 

@@ -24,8 +24,9 @@ namespace ZAGK13Export.Converters.ContentItems
             _fieldConverters = fieldConverters;
         }
 
-        public ContentItem Convert(TreeNode page)
+        public ContentItem? Convert(TreeNode page)
         {
+            if (page.IsLink) { return null; }
             var newContentItem = new ContentItem
             {
                 OldGuid = page.NodeGUID,
