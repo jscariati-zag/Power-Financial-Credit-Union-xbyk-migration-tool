@@ -1,4 +1,6 @@
-﻿using CMS.ContentEngine;
+﻿using AngleSharp.Dom;
+using Azure;
+using CMS.ContentEngine;
 using CMS.DataEngine;
 using Common;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +10,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -48,9 +52,32 @@ namespace ZAGXbyKImport.Services
             return widgetConfiguration;
         }
 
+        public static async Task<MemoryStream?> GetStreamFromUrlAsync(string url)
+        {
+            var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback =
+                    (HttpRequestMessage msg, X509Certificate2 cert, X509Chain chain, SslPolicyErrors errors) => true
+            };
+
+            using (HttpClient client = new HttpClient(handler))
+            {
+                var response = await client.GetAsync(url);
+
+                if (response.IsSuccessStatusCode) // i.e., 200–299
+                {
+                    byte[] data = await response.Content.ReadAsByteArrayAsync();
+                    return new MemoryStream(data);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         public Dictionary<string, object> ConvertItemData(Dictionary<string, object> itemData, bool skipReferences)
         {
-            var mediaPath = config.GetValue<string>("MediaPath");
             Dictionary<string, object> fields = new Dictionary<string, object>();
 
             foreach (var item in itemData)
@@ -59,18 +86,17 @@ namespace ZAGXbyKImport.Services
                 {
                     case Asset:
                         var asset = item.Value as Asset;
-                        var mediaFilePath = mediaPath + asset.AssetPath;
-                        if (!File.Exists(mediaFilePath)) { break; }
-                        var file = CMS.IO.FileInfo.New(mediaFilePath);
+                        var stream = GetStreamFromUrlAsync(asset.AssetUrl).Result;
+                        if (stream == null) { break; }
                         var assetMetadata = new ContentItemAssetMetadata()
                         {
-                            Extension = file.Extension,
+                            Extension = Path.GetExtension(new Uri(asset.AssetUrl).AbsolutePath),
                             Identifier = asset.FileGuid,
                             LastModified = DateTime.Now,
-                            Name = file.Name,
-                            Size = file.Length
+                            Name = Path.GetFileName(new Uri(asset.AssetUrl).AbsolutePath),
+                            Size = stream.Length
                         };
-                        var fileSource = new ContentItemAssetFileSource(file.FullName, false);
+                        var fileSource = new ContentItemAssetStreamSource((CancellationToken cancellationToken) => Task.FromResult<System.IO.Stream>(stream));
                         var assetMetadataWithSource = new ContentItemAssetMetadataWithSource(fileSource, assetMetadata);
                         fields.Add(item.Key, assetMetadataWithSource);
 

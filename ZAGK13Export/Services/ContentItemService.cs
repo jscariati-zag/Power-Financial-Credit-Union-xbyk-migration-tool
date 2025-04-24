@@ -15,12 +15,14 @@ namespace ZAGK13Export.Services
     class ContentItemService
     {
         private readonly IConfiguration _config;
+        private readonly XbyKImport _export;
         private readonly Dictionary<string, IContentItemConverter> _contentItemConverters;
         private readonly ContentHubFolderService _contentHubFolderService;
 
-        public ContentItemService(IConfiguration config, IEnumerable<IContentItemConverter> converters, ContentHubFolderService contentHubFolderService)
+        public ContentItemService(IConfiguration config, XbyKImport export, IEnumerable<IContentItemConverter> converters, ContentHubFolderService contentHubFolderService)
         {
             _config = config;
+            _export = export;
             _contentItemConverters = converters.ToDictionary(c => c.Type, c => c);
             _contentHubFolderService = contentHubFolderService;
         }
@@ -36,13 +38,13 @@ namespace ZAGK13Export.Services
             return Task.FromResult(pages);
         }
 
-        public void ConvertContentItems(XbyKImport export)
+        public void ConvertContentItems()
         {
             foreach (var contentItem in GetContentItems().Result)
             {
                 var convertedContentItem = ConvertContentItem(contentItem.ClassName, contentItem).Result;
                 if (convertedContentItem != null) {
-                    export.ContentItems.Add(convertedContentItem);
+                    _export.ContentItems.Add(convertedContentItem);
                 }
             }
         }
@@ -57,11 +59,11 @@ namespace ZAGK13Export.Services
             throw new ArgumentException($"No content item converter found for type: {type}");
         }
 
-        public void AddContentHubFolders(XbyKImport export)
+        public void AddContentHubFolders()
         {
             foreach (var contentItemConverter in _contentItemConverters.Select(c => c.Value))
             {
-                _contentHubFolderService.AddContentHubFolder(export, contentItemConverter.FolderDisplayName, contentItemConverter.FolderName, "root");
+                _contentHubFolderService.AddContentHubFolder(contentItemConverter.FolderDisplayName, contentItemConverter.FolderName, "root");
             }
         }
     }

@@ -14,10 +14,14 @@ using ZAGK13Export.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+XbyKImport export = new XbyKImport();
+
+builder.Services.AddSingleton(export);
 builder.Services.AddSingleton<CommonConverterService>();
 builder.Services.AddSingleton<ExportService>();
 builder.Services.AddSingleton<ContentHubFolderService>();
 builder.Services.AddSingleton<MediaService>();
+builder.Services.AddSingleton<AttachmentsService>();
 builder.Services.AddSingleton<ContentItemService>();
 builder.Services.AddSingleton<PageService>();
 builder.Services.AddSingleton<WidgetService>();
@@ -25,6 +29,7 @@ builder.Services.AddSingleton<SectionService>();
 builder.Services.AddSingleton<NavigationService>();
 
 builder.Services.AddSingleton<MediaConverter>();
+builder.Services.AddSingleton<AttachmentConverter>();
 builder.Services.AddSingleton<FieldConverters>();
 
 var assembly = Assembly.GetExecutingAssembly();

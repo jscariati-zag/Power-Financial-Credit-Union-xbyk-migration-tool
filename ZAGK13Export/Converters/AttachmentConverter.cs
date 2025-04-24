@@ -8,43 +8,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters
 {
-    class MediaConverter
+    class AttachmentConverter
     {
         private readonly IConfiguration _config;
 
-        public MediaConverter(IConfiguration config)
+        public AttachmentConverter(IConfiguration config)
         {
             _config = config;
         }
 
-        public ContentItem Convert(MediaFileInfo mediaFile)
+        public ContentItem Convert(AttachmentInfo attachment)
         {
-            var mediaLibraryInfo = MediaLibraryInfo.Provider.Get(mediaFile.FileLibraryID);
-            string[] folderAr = mediaFile.FilePath.Split('/');
-            var folderName = "Media_" + mediaLibraryInfo.LibraryName;
-            if (folderAr.Length > 2)
-            {
-                folderName += "_" + folderAr.Take(folderAr.Length - 1).Join("_");
-            }
             var newContentItem = new ContentItem
             {
-                OldGuid = mediaFile.FileGUID,
-                DisplayName = mediaFile.FileName,
+                OldGuid = attachment.AttachmentGUID,
+                DisplayName = attachment.AttachmentName,
                 ContentType = "Custom.Reusable_Image",
                 Language = _config.GetValue<string>("TargetLanguage"),
-                FolderName = folderName,
+                FolderName = "Attachments",
                 Published = true,
                 ItemData = new Dictionary<string, object>
                 {
-                    { "Description", mediaFile.FileDescription },
+                    { "Description", attachment.AttachmentDescription },
                     { "Image", new Asset{
-                        AssetUrl = MediaLibraryHelper.GetPermanentUrl(mediaFile),
-                        FileGuid = mediaFile.FileGUID
+                        AssetUrl = _config.GetValue<string>("BaseUrl") + Regex.Replace(AttachmentURLProvider.GetAttachmentUrl(attachment.AttachmentGUID, attachment.AttachmentName), "^~", ""),
+                        FileGuid = attachment.AttachmentGUID
                     } }
                 }
             };

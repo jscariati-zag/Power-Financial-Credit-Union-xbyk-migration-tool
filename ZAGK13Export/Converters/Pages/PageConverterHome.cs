@@ -53,6 +53,7 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Seo_MetaDescription", page.DocumentPageDescription },
                     { "WebPage_Seo_MetaKeywords", page.DocumentPageKeyWords },
                     { "WebPage_Seo_SchemaContent", page.GetValue("PageBaseSchemaContent", "") },
+                    { "WebPage_Seo_CanonicalUrl", page.GetValue("PageBaseCanonicalUrl", "") },
                     { "WebPage_Og_Title", page.GetValue("PageBaseOpenGraphTitle", "") },
                     { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
                     { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },

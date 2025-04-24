@@ -99,7 +99,7 @@ namespace Common
 
     public class Asset
     {
-        public string AssetPath { get; set; }
+        public string AssetUrl { get; set; }
         public Guid FileGuid { get; set; }
     }
 

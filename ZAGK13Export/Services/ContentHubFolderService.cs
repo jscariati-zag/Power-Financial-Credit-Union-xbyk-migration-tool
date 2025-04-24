@@ -9,11 +9,17 @@ namespace ZAGK13Export.Services
 {
     class ContentHubFolderService
     {
-        public void AddContentHubFolder(XbyKImport export, string displayName, string name, string parentName)
+        private readonly XbyKImport _export;
+
+        public ContentHubFolderService(XbyKImport export) { 
+            _export = export;
+        }
+
+        public void AddContentHubFolder(string displayName, string name, string parentName)
         {
-            if(!ContentHubFolderExists(export, name))
+            if(!ContentHubFolderExists(name))
             {
-                export.ContentHubFolders.Add(new ContentHubFolder
+                _export.ContentHubFolders.Add(new ContentHubFolder
                 {
                     DisplayName = displayName,
                     Name = name,
@@ -22,9 +28,9 @@ namespace ZAGK13Export.Services
             }
         }
 
-        public bool ContentHubFolderExists(XbyKImport export, string name)
+        public bool ContentHubFolderExists(string name)
         {
-            return export.ContentHubFolders.Where(f => f.Name == name).Any();
+            return _export.ContentHubFolders.Where(f => f.Name == name).Any();
         }
     }
 }

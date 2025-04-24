@@ -16,12 +16,14 @@ namespace ZAGK13Export.Services
     class MediaService
     {
         private readonly IConfiguration _config;
+        private readonly XbyKImport _export;
         private readonly MediaConverter _mediaConverter;
         private readonly ContentHubFolderService _contentHubFolderService;
 
-        public MediaService(IConfiguration config, MediaConverter mediaConverter, ContentHubFolderService contentHubFolderService)
+        public MediaService(IConfiguration config, XbyKImport export, MediaConverter mediaConverter, ContentHubFolderService contentHubFolderService)
         {
             _config = config;
+            _export = export;
             _mediaConverter = mediaConverter;
             _contentHubFolderService = contentHubFolderService;
         }
@@ -33,16 +35,16 @@ namespace ZAGK13Export.Services
             return Task.FromResult(mediaFiles);
         }
 
-        public void ConvertMediaLibraryFolders(XbyKImport export)
+        public void ConvertMediaLibraryFolders()
         {
             var rootPath = _config.GetValue<string>("MediaPath");
             var libraries = MediaLibraryInfo.Provider.Get().AsEnumerable<MediaLibraryInfo>();
 
-            _contentHubFolderService.AddContentHubFolder(export, "Media", "Media", "root");
+            _contentHubFolderService.AddContentHubFolder("Media", "Media", "root");
 
             foreach (var library in libraries)
             {
-                _contentHubFolderService.AddContentHubFolder(export, library.LibraryDisplayName, "Media_" + library.LibraryName, "Media");
+                _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryName, "Media");
 
                 string[] allFolders = Directory.GetDirectories(rootPath + library.LibraryFolder, "*", SearchOption.AllDirectories);
 
@@ -55,17 +57,17 @@ namespace ZAGK13Export.Services
                     string parentName = "Media_" + folderAr.Take(folderAr.Length - 1).Join("_");
                     if (displayName != "__thumbnails")
                     {
-                        _contentHubFolderService.AddContentHubFolder(export, displayName, name, parentName);
+                        _contentHubFolderService.AddContentHubFolder(displayName, name, parentName);
                     }
                 }
             }
         }
 
-        public void ConvertMediaFiles(XbyKImport export)
+        public void ConvertMediaFiles()
         {
             foreach (var mediaFileInfo in GetMediaFiles().Result)
             {
-                export.ContentItems.Add(ConvertMediaFile(mediaFileInfo).Result);
+                _export.ContentItems.Add(ConvertMediaFile(mediaFileInfo).Result);
             }
         }
 

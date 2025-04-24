@@ -16,15 +16,19 @@ namespace ZAGK13Export.Services
     class ExportService
     {
         private readonly IConfiguration _config;
+        private readonly XbyKImport _export;
         private readonly MediaService _mediaService;
+        private readonly AttachmentsService _attachmentsService;
         private readonly ContentItemService _contentItemService;
         private readonly PageService _pageService;
         private readonly NavigationService _navigationService;
 
-        public ExportService(IConfiguration config, MediaService mediaService, ContentItemService contentItemService, PageService pageService, NavigationService navigationService)
+        public ExportService(IConfiguration config, XbyKImport export, MediaService mediaService, AttachmentsService attachmentsService, ContentItemService contentItemService, PageService pageService, NavigationService navigationService)
         {
             _config = config;
+            _export = export;
             _mediaService = mediaService;
+            _attachmentsService = attachmentsService;
             _contentItemService = contentItemService;
             _pageService = pageService;
             _navigationService = navigationService;
@@ -32,16 +36,35 @@ namespace ZAGK13Export.Services
 
         public async Task RunAsync()
         {
-            XbyKImport export = new XbyKImport();
+            Console.Write("Converting media library folders...");
+            _mediaService.ConvertMediaLibraryFolders();
+            Console.WriteLine("COMPLETE");
 
-            _mediaService.ConvertMediaLibraryFolders(export);
-            _mediaService.ConvertMediaFiles(export);
-            _contentItemService.AddContentHubFolders(export);
-            _contentItemService.ConvertContentItems(export);
-            _pageService.ConvertPages(export.Pages, null);
-            _navigationService.AddNavigation(export.Pages);
+            Console.Write("Converting media files...");
+            _mediaService.ConvertMediaFiles();
+            Console.WriteLine("COMPLETE");
 
-            string json = JsonConvert.SerializeObject(export, new JsonSerializerSettings
+            Console.Write("Converting attachments...");
+            _attachmentsService.ConvertAttachments();
+            Console.WriteLine("COMPLETE");
+
+            Console.Write("Adding content hub folders...");
+            _contentItemService.AddContentHubFolders();
+            Console.WriteLine("COMPLETE");
+
+            Console.Write("Converting content items...");
+            _contentItemService.ConvertContentItems();
+            Console.WriteLine("COMPLETE");
+
+            Console.Write("Converting pages...");
+            _pageService.ConvertPages(_export.Pages, null);
+            Console.WriteLine("COMPLETE");
+
+            Console.Write("Adding navigation...");
+            _navigationService.AddNavigation(_export.Pages);
+            Console.WriteLine("COMPLETE");
+
+            string json = JsonConvert.SerializeObject(_export, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto
             });
