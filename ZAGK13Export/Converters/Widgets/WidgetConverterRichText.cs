@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace ZAGK13Export.Converters.Widgets
 {
-    class WidgetConverterText : IWidgetConverter
+    class WidgetConverterRichText : IWidgetConverter
     {
         public string Type => "custom.PartialRichText";
         public string TargetType => "Custom.Components.Widgets.RichText";
         private readonly FieldConverters _fieldConverters;
 
-        public WidgetConverterText(FieldConverters fieldConverters)
+        public WidgetConverterRichText(FieldConverters fieldConverters)
         {
             _fieldConverters = fieldConverters;
         }
