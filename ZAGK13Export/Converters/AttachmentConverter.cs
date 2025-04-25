@@ -31,7 +31,6 @@ namespace ZAGK13Export.Converters
                 DisplayName = attachment.AttachmentName,
                 ContentType = "Custom.Reusable_Image",
                 Language = _config.GetValue<string>("TargetLanguage"),
-                FolderName = "Attachments",
                 Published = true,
                 ItemData = new Dictionary<string, object>
                 {

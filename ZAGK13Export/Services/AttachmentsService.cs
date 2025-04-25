@@ -37,8 +37,6 @@ namespace ZAGK13Export.Services
 
         public void ConvertAttachments()
         {
-            _contentHubFolderService.AddContentHubFolder("Attachments", "Attachments", "root");
-
             foreach (var attachmentInfo in GetAttachments().Result)
             {
                 _export.ContentItems.Add(ConvertAttachment(attachmentInfo).Result);
