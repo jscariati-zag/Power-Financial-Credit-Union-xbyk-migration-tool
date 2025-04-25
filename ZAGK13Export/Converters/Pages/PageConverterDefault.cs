@@ -56,7 +56,15 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Og_Title", page.GetValue("PageBaseOpenGraphTitle", "") },
                     { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
                     { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
-                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) }
+                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
+                    { "WebPage_MastheadTitle", page.GetValue("MastheadTitle", "") },
+                    { "WebPage_MastheadText", page.GetValue("MastheadText", "") },
+                    { "WebPage_MastheadCtas", _fieldConverters.ConvertCtas(page.GetValue("MastheadCtas", "")) },
+                    { "WebPage_MastheadImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("MastheadImage", "")) },
+                    { "WebPage_SidebarCtasTitle", page.GetValue("SidebarCtasTitle", "") },
+                    { "WebPage_SubpageImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("SubpageImage", "")) },
+                    { "WebPage_SubpageText", page.GetValue("SubpageText", "") },
+                    { "WebPage_SubpageCtas", _fieldConverters.ConvertCtas(page.GetValue("SubpageCtas", "")) },
                 }
             };
 
