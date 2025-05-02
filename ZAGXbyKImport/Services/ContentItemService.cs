@@ -87,11 +87,16 @@ namespace ZAGXbyKImport.Services
                         subqueryParameters.OfContentType(ContentTypes);
                     }).InWorkspaces(config.GetValue<string>("WorkspaceName"));
 
+            ContentQueryExecutionOptions contentQueryExecutionOptions = new ContentQueryExecutionOptions
+            {
+                ForPreview = true,
+                IncludeSecuredItems = true
+            };
             // Executes the query specified in 'builder' and binds it using the logic in 'ModelBinder'.
             // The second argument of the 'GetResult' method is a delegate function used to specify the mapping behavior.
             IEnumerable<ContentItemDto> result =
                     await contentQueryExecutor
-                            .GetResult(builder, ModelBinder);
+                            .GetResult(builder, ModelBinder, contentQueryExecutionOptions);
 
             return result;
         }
