@@ -14,6 +14,7 @@ namespace Common
         public Guid OldGuid { get; set; }
         public int WebPageItemID { get; set; }
         public Guid WebPageItemGUID { get; set; }
+        public Guid ContentItemGUID { get; set; }
         public string Type { get; set; }
         public int Order { get; set; }
         public bool Published { get; set; }

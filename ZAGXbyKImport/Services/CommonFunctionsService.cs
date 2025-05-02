@@ -136,12 +136,12 @@ namespace ZAGXbyKImport.Services
                         if (skipReferences) { break; }
                         List<ContentItemReference> pageReferencelist = new List<ContentItemReference>();
                         var pageReference = item.Value as PageReference;
-                        var pageReferenceContentItem = xbyKImport.Pages.Where(p => p.OldGuid == pageReference.OldGuid).FirstOrDefault();
+                        var pageReferenceContentItem = FindPageByOldGuid(xbyKImport.Pages, pageReference.OldGuid);
                         if (pageReferenceContentItem != null)
                         {
                             pageReferencelist.Add(new ContentItemReference
                             {
-                                Identifier = pageReferenceContentItem.WebPageItemGUID
+                                Identifier = pageReferenceContentItem.ContentItemGUID
                             });
                         }
                         fields.Add(item.Key, pageReferencelist);
@@ -152,12 +152,12 @@ namespace ZAGXbyKImport.Services
                         var pageReferences = item.Value as List<PageReference>;
                         foreach (var pageReferencesItem in pageReferences)
                         {
-                            var pageReferencesContentItem = xbyKImport.Pages.Where(c => c.OldGuid == pageReferencesItem.OldGuid).FirstOrDefault();
+                            var pageReferencesContentItem = FindPageByOldGuid(xbyKImport.Pages, pageReferencesItem.OldGuid);
                             if (pageReferencesContentItem != null)
                             {
                                 pageReferencesList.Add(new ContentItemReference
                                 {
-                                    Identifier = pageReferencesContentItem.WebPageItemGUID
+                                    Identifier = pageReferencesContentItem.ContentItemGUID
                                 });
                             }
                         }
@@ -174,6 +174,27 @@ namespace ZAGXbyKImport.Services
             }
 
             return fields;
+        }
+
+        public static Page? FindPageByOldGuid(List<Page> pages, Guid oldGuid)
+        {
+            foreach (var page in pages)
+            {
+                if (page.OldGuid == oldGuid)
+                {
+                    return page;
+                }
+                else if (page.Children != null && page.Children.Any())
+                {
+                    var result = FindPageByOldGuid(page.Children, oldGuid);
+                    if(result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public string ConvertTextReferences(string itemValue)

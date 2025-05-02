@@ -111,6 +111,7 @@ namespace ZAGXbyKImport.Services
                                     .FirstOrDefault();
 
                 page.WebPageItemGUID = newWebPageItem.WebPageItemGUID;
+                page.ContentItemGUID = ContentItemInfo.Provider.Get().FirstOrDefault(c => c.ContentItemID == newWebPageItem.WebPageItemContentItemID).ContentItemGUID;
 
             } else if(page.Type == "Folder")
             {
