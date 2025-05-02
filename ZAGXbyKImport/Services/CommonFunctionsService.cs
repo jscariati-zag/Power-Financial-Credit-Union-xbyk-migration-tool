@@ -219,7 +219,13 @@ namespace ZAGXbyKImport.Services
                 string replacement = "";
                 if (contentItem != null)
                 {
-                    replacement = $"~/getContentAsset/{contentItem.ContentItemGUID.ToString()}/{config.GetValue<string>("ImageAssetFieldGUID")}/{filename}?language={contentItem.Language}";
+                    if (contentItem.ContentType == "Custom.Reusable_Image")
+                    {
+                        replacement = $"~/getContentAsset/{contentItem.ContentItemGUID.ToString()}/{config.GetValue<string>("ImageAssetFieldGUID")}/{filename}?language={contentItem.Language}";
+                    } else if (contentItem.ContentType == "Custom.Reusable_Document")
+                    {
+                        replacement = $"~/getContentAsset/{contentItem.ContentItemGUID.ToString()}/{config.GetValue<string>("DocumentAssetFieldGUID")}/{filename}?language={contentItem.Language}";
+                    }
                 }
 
                 itemValue = Regex.Replace(itemValue, pattern, replacement);
