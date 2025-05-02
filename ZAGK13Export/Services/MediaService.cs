@@ -67,11 +67,15 @@ namespace ZAGK13Export.Services
         {
             foreach (var mediaFileInfo in GetMediaFiles().Result)
             {
-                _export.ContentItems.Add(ConvertMediaFile(mediaFileInfo).Result);
+                var contentItem = ConvertMediaFile(mediaFileInfo).Result;
+                if (contentItem != null)
+                {
+                    _export.ContentItems.Add(contentItem);
+                }
             }
         }
 
-        public Task<ContentItem> ConvertMediaFile(MediaFileInfo mediaFile)
+        public Task<ContentItem?> ConvertMediaFile(MediaFileInfo mediaFile)
         {
             return Task.FromResult(_mediaConverter.Convert(mediaFile));
         }

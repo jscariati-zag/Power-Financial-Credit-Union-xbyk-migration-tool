@@ -22,7 +22,7 @@ namespace ZAGK13Export.Converters
             _config = config;
         }
 
-        public ContentItem Convert(MediaFileInfo mediaFile)
+        public ContentItem? Convert(MediaFileInfo mediaFile)
         {
             var mediaLibraryInfo = MediaLibraryInfo.Provider.Get(mediaFile.FileLibraryID);
             string[] folderAr = mediaFile.FilePath.Split('/');
@@ -31,23 +31,46 @@ namespace ZAGK13Export.Converters
             {
                 folderName += "_" + folderAr.Take(folderAr.Length - 1).Join("_");
             }
-            var newContentItem = new ContentItem
+            ContentItem? newContentItem = new ContentItem();
+
+            if (_config.GetValue<string>("ImageExtensions").Split(';').Contains(mediaFile.FileExtension.TrimStart('.')))
             {
-                OldGuid = mediaFile.FileGUID,
-                DisplayName = mediaFile.FileName,
-                ContentType = "Custom.Reusable_Image",
-                Language = _config.GetValue<string>("TargetLanguage"),
-                FolderName = folderName,
-                Published = true,
-                ItemData = new Dictionary<string, object>
+                newContentItem.OldGuid = mediaFile.FileGUID;
+                newContentItem.DisplayName = mediaFile.FileName;
+                newContentItem.ContentType = "Custom.Reusable_Image";
+                newContentItem.Language = _config.GetValue<string>("TargetLanguage");
+                newContentItem.FolderName = folderName;
+                newContentItem.Published = true;
+                newContentItem.ItemData = new Dictionary<string, object>
                 {
                     { "Description", mediaFile.FileDescription },
                     { "Image", new Asset{
                         AssetUrl = MediaLibraryHelper.GetPermanentUrl(mediaFile),
                         FileGuid = mediaFile.FileGUID
                     } }
-                }
-            };
+                };
+            }
+            else if(_config.GetValue<string>("DocumentExtensions").Split(';').Contains(mediaFile.FileExtension.TrimStart('.')))
+            {
+                newContentItem.OldGuid = mediaFile.FileGUID;
+                newContentItem.DisplayName = mediaFile.FileName;
+                newContentItem.ContentType = "Custom.Reusable_Document";
+                newContentItem.Language = _config.GetValue<string>("TargetLanguage");
+                newContentItem.FolderName = folderName;
+                newContentItem.Published = true;
+                newContentItem.ItemData = new Dictionary<string, object>
+                {
+                    { "Description", mediaFile.FileDescription },
+                    { "Document", new Asset{
+                        AssetUrl = MediaLibraryHelper.GetPermanentUrl(mediaFile),
+                        FileGuid = mediaFile.FileGUID
+                    } }
+                };
+            }
+            else
+            {
+                return null;
+            }
 
             return newContentItem;
         }
