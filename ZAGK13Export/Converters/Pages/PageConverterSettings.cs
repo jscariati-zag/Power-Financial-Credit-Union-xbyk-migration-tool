@@ -37,7 +37,28 @@ namespace ZAGK13Export.Converters.Pages
                 Published = page.IsPublished,
                 ItemData = new Dictionary<string, object>
                 {
-                    { "WebPage_Content_Name", page.DocumentName }
+                    { "Settings_ContactBand_Title", page.GetValue("ContactTitle", "") },
+                    { "Settings_ContactBand_WithinOklahoma", page.GetValue("ContactOklahoma", "") },
+                    { "Settings_ContactBand_OutsideOklahoma", page.GetValue("ContactOutsideOklahoma", "") },
+                    { "Settings_ContactBand_ContactHours", page.GetValue("ContactHours", "") },
+                    { "Settings_Footer_FooterSEO", page.GetValue("FooterSeo", "") },
+                    { "Settings_Footer_Routing", page.GetValue("FooterRouting", "") },
+                    { "Settings_Footer_Links", page.GetValue("FooterLinks", "") },
+                    { "Settings_Footer_Copyright", page.GetValue("FooterCopyright", "") },
+                    { "Settings_Footer_Cookie", page.GetValue("FooterCookie", "") },
+                    { "Settings_Speedbump_Title", page.GetValue("SpeedbumpTitle", "") },
+                    { "Settings_Speedbump_Text", page.GetValue("SpeedbumpText", "") },
+                    { "Settings_Speedbump_Whitelist", page.GetValue("SpeedbumpWhitelist", "") },
+                    { "Settings_Speedbump_TitleSBA", page.GetValue("SpeedbumpTitleSBA", "") },
+                    { "Settings_Speedbump_ContentSBA", page.GetValue("SpeedbumpContentSBA", "") },
+                    { "Settings_Speedbump_RepLostOrStolenTitle", page.GetValue("SpeedbumpRepLostOrStolenTitle", "") },
+                    { "Settings_Speedbump_RepLostOrStolenText", page.GetValue("SpeedbumpRepLostOrStolenText", "") },
+                    { "Settings_Speedbump_RepLostOrStolenTrigger", page.GetValue("SpeedbumpRepLostOrStolenTrigger", "") },
+                    { "Settings_Speedbump_RepLostOrStolenButtonText", page.GetValue("SpeedbumpReportLostOrStolenButtonText", "") },
+                    { "Settings_Speedbump_RepLostOrStolenButtonArialabel", page.GetValue("SpeedbumpReportLostOrStolenButtonArialabel", "") },
+                    { "Settings_Speedbump_FDICTitle", page.GetValue("SpeedbumpFDICTitle", "") },
+                    { "Settings_Speedbump_FDICText", page.GetValue("SpeedbumpFDICText", "") },
+                    { "Settings_Speedbump_FDICTrigger", page.GetValue("SpeedbumpFDICTrigger", "") }
                 }
             };
 

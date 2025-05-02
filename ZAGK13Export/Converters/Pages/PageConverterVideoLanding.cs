@@ -1,0 +1,88 @@
+﻿using CMS.DocumentEngine;
+using CMS.Relationships;
+using Common;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ZAGK13Export.Services;
+using static Org.BouncyCastle.Math.EC.ECCurve;
+
+namespace ZAGK13Export.Converters.Pages
+{
+    class PageConverterVideoLanding : IPageConverter
+    {
+        public string Type => "custom.PageVideoLanding";
+        public string TargetType => "Custom.WebPage_VideoLanding";
+        private readonly IConfiguration _config;
+        private readonly FieldConverters _fieldConverters;
+        private readonly CommonConverterService _commonConverterService;
+
+        public PageConverterVideoLanding(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
+        {
+            _config = config;
+            _fieldConverters = fieldConverters;
+            _commonConverterService = commonConverterService;
+        }
+
+        public Page Convert(TreeNode page)
+        {
+            TreeProvider treeProvider = new TreeProvider();
+            var featuredVideosRelationshipName = RelationshipNameInfo.Provider.Get("custom.PageVideoLanding_7ce4c25f-9c22-450b-81f4-aabb2757bc63");
+            var featuredVideos = RelationshipInfo.Provider.Get()
+                .Where(r => r.RelationshipNameId == featuredVideosRelationshipName.RelationshipNameId && r.LeftNodeId == page.NodeID)
+                .OrderBy(r => r.RelationshipOrder)
+                .Select(r => new PageReference
+                {
+                    OldGuid = DocumentHelper.GetDocument(r.RightNodeId, _config.GetValue<string>("Culture"), treeProvider).NodeGUID
+                }).ToList();
+
+            var newPage = new Page
+            {
+                OldGuid = page.NodeGUID,
+                Type = "Page",
+                DisplayName = page.DocumentName,
+                ContentType = TargetType,
+                WidgetConfiguration = _commonConverterService.ConvertPageWidgets(page, _config.GetValue<string>("ComponentContainerType"), "EditableArea_01"),
+                TemplateConfiguration = new TemplateConfiguration
+                {
+                    identifier = "Custom.WebPage.VideoLanding"
+                },
+                Language = _config.GetValue<string>("TargetLanguage"),
+                UrlSlug = page.NodeAlias,
+                Order = page.NodeOrder,
+                Published = page.IsPublished,
+                ItemData = new Dictionary<string, object>
+                {
+                    { "WebPage_Content_Name", page.DocumentName },
+                    { "WebPage_Inclusions_Search", !page.DocumentSearchExcluded },
+                    { "WebPage_Inclusions_SitemapHtml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },
+                    { "WebPage_Inclusions_SitemapXml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },
+                    { "WebPage_Seo_MetaTitle", page.DocumentPageTitle },
+                    { "WebPage_Seo_MetaDescription", page.DocumentPageDescription },
+                    { "WebPage_Seo_MetaKeywords", page.DocumentPageKeyWords },
+                    { "WebPage_Seo_SchemaContent", page.GetValue("PageBaseSchemaContent", "") },
+                    { "WebPage_Og_Title", page.GetValue("PageBaseOpenGraphTitle", "") },
+                    { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
+                    { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
+                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
+                    { "WebPage_MastheadTitle", page.GetValue("MastheadTitle", "") },
+                    { "WebPage_MastheadText", page.GetValue("MastheadText", "") },
+                    { "WebPage_MastheadCtas", _fieldConverters.ConvertCtas(page.GetValue("MastheadCtas", "")) },
+                    { "WebPage_MastheadImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("MastheadImage", "")) },
+                    { "WebPage_SidebarCtasTitle", page.GetValue("SidebarCtasTitle", "") },
+                    { "WebPage_SubpageImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("SubpageImage", "")) },
+                    { "WebPage_SubpageText", page.GetValue("SubpageText", "") },
+                    { "WebPage_SubpageCtas", _fieldConverters.ConvertCtas(page.GetValue("SubpageCtas", "")) },
+                    { "WebPage_VideoLandingFeaturedVideo", featuredVideos },
+                    { "WebPage_SidebarForm", page.GetValue<bool>("SidebarForm", false) },
+                    { "WebPage_SidebarFormTitle", page.GetValue("SidebarFormTitle", "") },
+                }
+            };
+
+            return newPage;
+        }
+    }
+}
