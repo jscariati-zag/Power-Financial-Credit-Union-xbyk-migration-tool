@@ -34,14 +34,12 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "richText", page.GetValue<string>("Text", "") },
-                                { "cards", new ContentReference{ OldGuid = Guid.Parse("31e936bb-57be-4b71-90ea-4b422c5194d4") } }, // page.IsLink ? DocumentHelper.GetDocument(page.NodeLinkedNodeID, new TreeProvider()).NodeGUID : page.NodeGUID
                                 { "anchorText", null }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "richText", Guid.NewGuid().ToString() },
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "cards", Guid.NewGuid().ToString() },
                                 { "anchorText", Guid.NewGuid().ToString() }
                             }
                         }
