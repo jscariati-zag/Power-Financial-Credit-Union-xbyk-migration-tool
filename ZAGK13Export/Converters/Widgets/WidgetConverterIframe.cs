@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters.Widgets
 {
-    class WidgetConverterRichText : IWidgetConverter
+    class WidgetConverterIframe : IWidgetConverter
     {
-        public string Type => "custom.PartialRichText";
-        public string TargetType => "Custom.Components.Widgets.RichText";
+        public string Type => "custom.PartialIframe";
+        public string TargetType => "Custom.Components.Widgets.Iframe";
         private readonly FieldConverters _fieldConverters;
 
-        public WidgetConverterRichText(FieldConverters fieldConverters)
+        public WidgetConverterIframe(FieldConverters fieldConverters)
         {
             _fieldConverters = fieldConverters;
         }
@@ -34,14 +35,22 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", page.GetValue<string>("Key", "") },
-                                { "richText", page.GetValue<string>("Text", "") },
+                                { "title", page.GetValue<string>("Title", "") },
+                                { "text", page.GetValue<string>("Text", "") },
+                                { "source", page.GetValue<string>("IframeSource", "") },
+                                { "height", page.GetValue<string>("IframeHeight", "") },
+                                { "transcriptURL", page.GetValue<string>("IframeTranscript", "") },
                                 { "anchorText", null }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", Guid.NewGuid().ToString() },
-                                { "richText", Guid.NewGuid().ToString() },
+                                { "title", Guid.NewGuid().ToString() },
+                                { "text", Guid.NewGuid().ToString() },
+                                { "source", Guid.NewGuid().ToString() },
+                                { "height", Guid.NewGuid().ToString() },
+                                { "transcriptURL", Guid.NewGuid().ToString() },
                                 { "anchorText", Guid.NewGuid().ToString() }
                             }
                         }

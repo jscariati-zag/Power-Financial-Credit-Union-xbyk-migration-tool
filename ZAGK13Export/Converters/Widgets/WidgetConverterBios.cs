@@ -5,22 +5,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters.Widgets
 {
-    class WidgetConverterRichText : IWidgetConverter
+    class WidgetConverterBios : IWidgetConverter
     {
-        public string Type => "custom.PartialRichText";
-        public string TargetType => "Custom.Components.Widgets.RichText";
+        public string Type => "custom.PartialBios";
+        public string TargetType => "Custom.Components.Widgets.Bios";
         private readonly FieldConverters _fieldConverters;
 
-        public WidgetConverterRichText(FieldConverters fieldConverters)
+        public WidgetConverterBios(FieldConverters fieldConverters)
         {
             _fieldConverters = fieldConverters;
         }
 
         public Widget Convert(TreeNode page)
         {
+            var bios = page.Parent.Parent.Children
+                            .Where(c => c.ClassName == "custom.PageBio")
+                            .OrderBy(c => c.NodeOrder)
+                            .Select(r => new PageReference
+                            {
+                                OldGuid = r.NodeGUID
+                            }).ToList();
+
             var newWidget = new Widget
             {
                 identifier = Guid.NewGuid().ToString(),
@@ -34,14 +43,18 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", page.GetValue<string>("Key", "") },
-                                { "richText", page.GetValue<string>("Text", "") },
+                                { "title", page.GetValue<string>("Title", "") },
+                                { "text", page.GetValue<string>("Text", "") },
+                                { "bios", bios },
                                 { "anchorText", null }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", Guid.NewGuid().ToString() },
-                                { "richText", Guid.NewGuid().ToString() },
+                                { "title", Guid.NewGuid().ToString() },
+                                { "text", Guid.NewGuid().ToString() },
+                                { "bios", Guid.NewGuid().ToString() },
                                 { "anchorText", Guid.NewGuid().ToString() }
                             }
                         }

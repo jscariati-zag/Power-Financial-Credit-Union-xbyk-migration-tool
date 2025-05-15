@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace ZAGK13Export.Converters.Widgets
 {
-    class WidgetConverterRichText : IWidgetConverter
+    class WidgetConverterIntro : IWidgetConverter
     {
-        public string Type => "custom.PartialRichText";
-        public string TargetType => "Custom.Components.Widgets.RichText";
+        public string Type => "custom.PartialIntro";
+        public string TargetType => "Custom.Components.Widgets.Intro";
         private readonly FieldConverters _fieldConverters;
 
-        public WidgetConverterRichText(FieldConverters fieldConverters)
+        public WidgetConverterIntro(FieldConverters fieldConverters)
         {
             _fieldConverters = fieldConverters;
         }
@@ -34,14 +34,14 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", page.GetValue<string>("Key", "") },
-                                { "richText", page.GetValue<string>("Text", "") },
+                                { "text", page.GetValue<string>("Text", "") },
                                 { "anchorText", null }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", Guid.NewGuid().ToString() },
-                                { "richText", Guid.NewGuid().ToString() },
+                                { "text", Guid.NewGuid().ToString() },
                                 { "anchorText", Guid.NewGuid().ToString() }
                             }
                         }

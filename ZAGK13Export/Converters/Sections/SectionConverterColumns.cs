@@ -76,12 +76,46 @@ namespace ZAGK13Export.Converters.Widgets
                 foreach (var column in columns)
                 {
                     var columnGuid = Guid.NewGuid().ToString();
+                    var columnText = column.GetValue<string>("Text", "");
+                    List<Widget> widgets = new List<Widget>();
+
+                    if (columnText != "")
+                    {
+                        var newRichTextWidget = new Widget
+                        {
+                            identifier = Guid.NewGuid().ToString(),
+                            type = "Custom.Components.Widgets.RichText",
+                            variants = new List<Variant>
+                            {
+                                { new Variant
+                                    {
+                                        identifier = Guid.NewGuid().ToString(),
+                                        properties = new Dictionary<string, object>
+                                        {
+                                            { "guid", Guid.NewGuid().ToString() },
+                                            { "richText", columnText },
+                                            { "anchorText", null }
+                                        },
+                                        fieldIdentifiers = new Dictionary<string, object>
+                                        {
+                                            { "richText", Guid.NewGuid().ToString() },
+                                            { "guid", Guid.NewGuid().ToString() },
+                                            { "anchorText", Guid.NewGuid().ToString() }
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                        widgets.Add(newRichTextWidget);
+                    }
+
+                    widgets.AddRange(_widgetService.ConvertWidgets(column).Result);
 
                     zones.Add(new Zone
                     {
                         identifier = Guid.NewGuid().ToString(),
                         name = "Section_" + sectionGuid + "_Column_" + columnGuid,
-                        widgets = _widgetService.ConvertWidgets(column).Result
+                        widgets = widgets
                     });
 
                     zagJsonTable.rows.Add(new ZAGJsonTableRows

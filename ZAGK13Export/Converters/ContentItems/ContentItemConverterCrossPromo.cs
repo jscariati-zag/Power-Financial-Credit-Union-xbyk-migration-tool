@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace ZAGK13Export.Converters.ContentItems
 {
-    class ContentItemConverterAlert : IContentItemConverter
+    class ContentItemConverterCrossPromo : IContentItemConverter
     {
-        public string Type => "custom.Alert";
-        public string TargetType => "Custom.Reusable_Alert";
-        public string FolderDisplayName => "Alerts";
-        public string FolderName => "Alerts";
+        public string Type => "custom.PartialCrossPromo";
+        public string TargetType => "Custom.Reusable_CrossPromo";
+        public string FolderDisplayName => "Cross Promos";
+        public string FolderName => "CrossPromos";
         private readonly IConfiguration _config;
         private readonly FieldConverters _fieldConverters;
 
-        public ContentItemConverterAlert(IConfiguration config, FieldConverters fieldConverters)
+        public ContentItemConverterCrossPromo(IConfiguration config, FieldConverters fieldConverters)
         {
             _config = config;
             _fieldConverters = fieldConverters;
@@ -37,11 +37,10 @@ namespace ZAGK13Export.Converters.ContentItems
                 FolderName = FolderName,
                 ItemData = new Dictionary<string, object>
                 {
-                    { "Name", page.DocumentName },
-                    { "Icon", page.GetValue<string>("IconFA", "") },
-                    { "Class", page.GetValue<string>("Style", "") },
                     { "Title", page.GetValue<string>("Title", "") },
-                    { "RichText", page.GetValue<string>("Text", "") }
+                    { "Text", page.GetValue<string>("Text", "") },
+                    { "Ctas", _fieldConverters.ConvertCtas(page.GetValue<string>("Ctas", "")) },
+                    { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("Image", "")) },
                 }
             };
 

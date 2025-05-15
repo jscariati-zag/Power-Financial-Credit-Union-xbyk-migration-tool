@@ -63,16 +63,16 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_MastheadCtas", _fieldConverters.ConvertCtas(page.GetValue("MastheadCtas", "")) },
                     { "WebPage_MastheadImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("MastheadImage", "")) },
                     { "WebPage_SidebarCtasTitle", page.GetValue("SidebarCtasTitle", "") },
-                    { "WebPage_VideoTitle", page.GetValue("VideoTitle", "") },
-                    { "WebPage_VideoPublishDate", page.GetDateTimeValue("VideoPublishDate", DateTime.MinValue) },
-                    { "WebPage_VideoSubhead", page.GetValue("VideoSubhead", "") },
-                    { "WebPage_VideoDuration", page.GetValue("VideoDuration", "") },
-                    { "WebPage_VideoLongDescription", page.GetValue("VideoLongDescription", "") },
-                    { "WebPage_VideoShortDescription", page.GetValue("VideoShortDescription", "") },
-                    { "WebPage_VideoThumbnail", _fieldConverters.ConvertMediaItemReference(page.GetValue("VideoThumbnail", "")) },
-                    { "WebPage_VideoYoutubeUrl", page.GetValue("VideoYoutubeUrl", "") },
-                    { "WebPage_VideoRoundIconImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("VideoRoundIconImage", "")) },
-                    { "WebPage_VideoRoundIconAltText", page.GetValue("VideoRoundIconAltText", "") }
+                    { "Title", page.GetValue("VideoTitle", "") },
+                    { "PublishDate", page.GetDateTimeValue("VideoPublishDate", DateTime.MinValue) },
+                    { "Subhead", page.GetValue("VideoSubhead", "") },
+                    { "Duration", page.GetValue("VideoDuration", "") },
+                    { "LongDescription", page.GetValue("VideoLongDescription", "") },
+                    { "ShortDescription", page.GetValue("VideoShortDescription", "") },
+                    { "Thumbnail", _fieldConverters.ConvertMediaItemReference(page.GetValue("VideoThumbnail", "")) },
+                    { "YoutubeUrl", page.GetValue("VideoYoutubeUrl", "") },
+                    { "RoundIconImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("VideoRoundIconImage", "")) },
+                    { "RoundIconAltText", page.GetValue("VideoRoundIconAltText", "") }
                 }
             };
 

@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace ZAGK13Export.Converters.ContentItems
 {
-    class ContentItemConverterAlert : IContentItemConverter
+    class ContentItemConverterGalleryItem : IContentItemConverter
     {
-        public string Type => "custom.Alert";
-        public string TargetType => "Custom.Reusable_Alert";
-        public string FolderDisplayName => "Alerts";
-        public string FolderName => "Alerts";
+        public string Type => "custom.PartialGalleryItem";
+        public string TargetType => "Custom.Reusable_GalleryItem";
+        public string FolderDisplayName => "Gallery Items";
+        public string FolderName => "GalleryItems";
         private readonly IConfiguration _config;
         private readonly FieldConverters _fieldConverters;
 
-        public ContentItemConverterAlert(IConfiguration config, FieldConverters fieldConverters)
+        public ContentItemConverterGalleryItem(IConfiguration config, FieldConverters fieldConverters)
         {
             _config = config;
             _fieldConverters = fieldConverters;
@@ -37,11 +37,9 @@ namespace ZAGK13Export.Converters.ContentItems
                 FolderName = FolderName,
                 ItemData = new Dictionary<string, object>
                 {
-                    { "Name", page.DocumentName },
-                    { "Icon", page.GetValue<string>("IconFA", "") },
-                    { "Class", page.GetValue<string>("Style", "") },
+                    { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("Image", "")) },
                     { "Title", page.GetValue<string>("Title", "") },
-                    { "RichText", page.GetValue<string>("Text", "") }
+                    { "Text", page.GetValue<string>("Text", "") },
                 }
             };
 

@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace ZAGK13Export.Converters.ContentItems
 {
-    class ContentItemConverterAlert : IContentItemConverter
+    class ContentItemConverterComparisonPersonalSavingsProduct : IContentItemConverter
     {
-        public string Type => "custom.Alert";
-        public string TargetType => "Custom.Reusable_Alert";
-        public string FolderDisplayName => "Alerts";
-        public string FolderName => "Alerts";
+        public string Type => "custom.PartialComparisonPersonalSavingsProduct";
+        public string TargetType => "Custom.Reusable_ComparisonPersonalSavingsProduct";
+        public string FolderDisplayName => "Comparison Personal Savings Products";
+        public string FolderName => "ComparisonPersonalSavingsProducts";
         private readonly IConfiguration _config;
         private readonly FieldConverters _fieldConverters;
 
-        public ContentItemConverterAlert(IConfiguration config, FieldConverters fieldConverters)
+        public ContentItemConverterComparisonPersonalSavingsProduct(IConfiguration config, FieldConverters fieldConverters)
         {
             _config = config;
             _fieldConverters = fieldConverters;
@@ -37,11 +37,10 @@ namespace ZAGK13Export.Converters.ContentItems
                 FolderName = FolderName,
                 ItemData = new Dictionary<string, object>
                 {
-                    { "Name", page.DocumentName },
-                    { "Icon", page.GetValue<string>("IconFA", "") },
-                    { "Class", page.GetValue<string>("Style", "") },
-                    { "Title", page.GetValue<string>("Title", "") },
-                    { "RichText", page.GetValue<string>("Text", "") }
+                    { "Ctas", _fieldConverters.ConvertCtas(page.GetValue<string>("Ctas", "")) },
+                    { "BalanceToEarnInterest", page.GetValue<string>("BalanceToEarnInterest", "") },
+                    { "WithdrawalFee", page.GetValue<string>("WithdrawalFee", "") },
+                    { "ServiceCharge", page.GetValue<string>("ServiceCharge", "") },
                 }
             };
 

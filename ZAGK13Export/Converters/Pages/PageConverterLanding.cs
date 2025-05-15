@@ -58,8 +58,8 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
                     { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
                     { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
-                    { "WebPage_SidebarForm", page.GetBooleanValue("SidebarForm", false) },
-                    { "WebPage_SidebarFormTitle", page.GetValue("SidebarFormTitle", "") }
+                    { "SidebarForm", page.GetBooleanValue("SidebarForm", false) },
+                    { "SidebarFormTitle", page.GetValue("SidebarFormTitle", "") }
                 }
             };
 

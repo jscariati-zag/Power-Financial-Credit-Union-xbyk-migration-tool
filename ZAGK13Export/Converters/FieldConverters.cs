@@ -124,5 +124,60 @@ namespace ZAGK13Export.Converters
 
             return JsonSerializer.Serialize(zagJsonTable.rows);
         }
+
+        public string ConvertFeatures(string features)
+        {
+            var featuresAr = features.Split("\r\n");
+
+            if (featuresAr.Length == 0)
+            {
+                return "";
+            }
+
+            var zagJsonTable = new ZAGJsonTable();
+
+            foreach (var feature in featuresAr)
+            {
+                var featureAr = feature.Split('|');
+
+                if (featureAr.Length == 2)
+                {
+                    zagJsonTable.rows.Add(new ZAGJsonTableRows
+                    {
+                        guid = Guid.NewGuid().ToString(),
+                        type = "Unset",
+                        fields = new List<ZAGJsonTableField>
+                        {
+                            { new ZAGJsonTableField {
+                                name = "Label",
+                                slug = "label",
+                                type = "Text",
+                                value = featureAr[0],
+                                options = new List<string>(),
+                                visible = true,
+                                tableRowSpan = false,
+                                tableColSpan = false,
+                                tableRowSpanCount = 0,
+                                tableColSpanCount = 0
+                            }},
+                            { new ZAGJsonTableField {
+                                name = "Icon",
+                                slug = "icon",
+                                type = "Text",
+                                value = featureAr[1],
+                                options = new List<string>(),
+                                visible = true,
+                                tableRowSpan = false,
+                                tableColSpan = false,
+                                tableRowSpanCount = 0,
+                                tableColSpanCount = 0
+                            }}
+                        }
+                    });
+                }
+            }
+
+            return JsonSerializer.Serialize(zagJsonTable.rows);
+        }
     }
 }

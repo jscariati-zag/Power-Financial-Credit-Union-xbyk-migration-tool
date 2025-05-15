@@ -58,15 +58,15 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
                     { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
                     { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
-                    { "WebPage_BioName", page.GetValue("BioName", "") },
-                    { "WebPage_BioTitle", page.GetValue("BioTitle", "") },
-                    { "WebPage_BioImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("BioImage", "")) },
-                    { "WebPage_BioPhone", page.GetValue("BioPhone", "") },
-                    { "WebPage_BioEmailAddress", page.GetValue("BioEmailAddress", "") },
-                    { "WebPage_BioCtas", _fieldConverters.ConvertCtas(page.GetValue("BioCtas", "")) },
-                    { "WebPage_BioSpecialties", page.GetValue("BioSpecialties", "") },
-                    { "WebPage_BioAddress", page.GetValue("BioAddress", "") },
-                    { "WebPage_BioContent", page.GetValue("BioContent", "") }
+                    { "Name", page.GetValue("BioName", "") },
+                    { "Title", page.GetValue("BioTitle", "") },
+                    { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("BioImage", "")) },
+                    { "Phone", page.GetValue("BioPhone", "") },
+                    { "EmailAddress", page.GetValue("BioEmailAddress", "") },
+                    { "Ctas", _fieldConverters.ConvertCtas(page.GetValue("BioCtas", "")) },
+                    { "Specialties", page.GetValue("BioSpecialties", "") },
+                    { "Address", page.GetValue("BioAddress", "") },
+                    { "Content", page.GetValue("BioContent", "") }
                 }
             };
 

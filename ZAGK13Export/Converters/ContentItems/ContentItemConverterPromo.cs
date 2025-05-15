@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace ZAGK13Export.Converters.ContentItems
 {
-    class ContentItemConverterAlert : IContentItemConverter
+    class ContentItemConverterPromo : IContentItemConverter
     {
-        public string Type => "custom.Alert";
-        public string TargetType => "Custom.Reusable_Alert";
-        public string FolderDisplayName => "Alerts";
-        public string FolderName => "Alerts";
+        public string Type => "custom.PartialPromo";
+        public string TargetType => "Custom.Reusable_Promo";
+        public string FolderDisplayName => "Promos";
+        public string FolderName => "Promos";
         private readonly IConfiguration _config;
         private readonly FieldConverters _fieldConverters;
 
-        public ContentItemConverterAlert(IConfiguration config, FieldConverters fieldConverters)
+        public ContentItemConverterPromo(IConfiguration config, FieldConverters fieldConverters)
         {
             _config = config;
             _fieldConverters = fieldConverters;
@@ -37,11 +37,10 @@ namespace ZAGK13Export.Converters.ContentItems
                 FolderName = FolderName,
                 ItemData = new Dictionary<string, object>
                 {
-                    { "Name", page.DocumentName },
-                    { "Icon", page.GetValue<string>("IconFA", "") },
-                    { "Class", page.GetValue<string>("Style", "") },
                     { "Title", page.GetValue<string>("Title", "") },
-                    { "RichText", page.GetValue<string>("Text", "") }
+                    { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("Image", "")) },
+                    { "CtaTitle", page.GetValue<string>("Cta", "") },
+                    { "Cta", _fieldConverters.ConvertCtas($"|{page.GetValue<string>("Url", "").TrimStart('~')}|{page.GetValue<string>("Target", "")}|") },
                 }
             };
 

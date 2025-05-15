@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters.Widgets
 {
-    class WidgetConverterRichText : IWidgetConverter
+    class WidgetConverterSubpages : IWidgetConverter
     {
-        public string Type => "custom.PartialRichText";
-        public string TargetType => "Custom.Components.Widgets.RichText";
+        public string Type => "custom.PartialSubpages";
+        public string TargetType => "Custom.Components.Widgets.Subpages";
         private readonly FieldConverters _fieldConverters;
 
-        public WidgetConverterRichText(FieldConverters fieldConverters)
+        public WidgetConverterSubpages(FieldConverters fieldConverters)
         {
             _fieldConverters = fieldConverters;
         }
@@ -34,14 +35,12 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", page.GetValue<string>("Key", "") },
-                                { "richText", page.GetValue<string>("Text", "") },
                                 { "anchorText", null }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", Guid.NewGuid().ToString() },
-                                { "richText", Guid.NewGuid().ToString() },
                                 { "anchorText", Guid.NewGuid().ToString() }
                             }
                         }

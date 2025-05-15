@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters.Widgets
 {
-    class WidgetConverterRichText : IWidgetConverter
+    class WidgetConverterSearchResults : IWidgetConverter
     {
-        public string Type => "custom.PartialRichText";
-        public string TargetType => "Custom.Components.Widgets.RichText";
+        public string Type => "custom.PartialSearchResults";
+        public string TargetType => "Custom.Components.Widgets.Search";
         private readonly FieldConverters _fieldConverters;
 
-        public WidgetConverterRichText(FieldConverters fieldConverters)
+        public WidgetConverterSearchResults(FieldConverters fieldConverters)
         {
             _fieldConverters = fieldConverters;
         }
@@ -34,14 +35,18 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", page.GetValue<string>("Key", "") },
-                                { "richText", page.GetValue<string>("Text", "") },
+                                { "title", page.GetValue<string>("Title", "") },
+                                { "text", page.GetValue<string>("Text", "") },
+                                { "index", "Site" },
                                 { "anchorText", null }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "key", Guid.NewGuid().ToString() },
-                                { "richText", Guid.NewGuid().ToString() },
+                                { "title", Guid.NewGuid().ToString() },
+                                { "text", Guid.NewGuid().ToString() },
+                                { "index", Guid.NewGuid().ToString() },
                                 { "anchorText", Guid.NewGuid().ToString() }
                             }
                         }

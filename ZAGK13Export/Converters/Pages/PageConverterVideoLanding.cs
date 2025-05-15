@@ -76,9 +76,9 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_SubpageImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("SubpageImage", "")) },
                     { "WebPage_SubpageText", page.GetValue("SubpageText", "") },
                     { "WebPage_SubpageCtas", _fieldConverters.ConvertCtas(page.GetValue("SubpageCtas", "")) },
-                    { "WebPage_VideoLandingFeaturedVideo", featuredVideos },
-                    { "WebPage_SidebarForm", page.GetValue<bool>("SidebarForm", false) },
-                    { "WebPage_SidebarFormTitle", page.GetValue("SidebarFormTitle", "") },
+                    { "FeaturedVideo", featuredVideos },
+                    { "SidebarForm", page.GetValue<bool>("SidebarForm", false) },
+                    { "SidebarFormTitle", page.GetValue("SidebarFormTitle", "") },
                 }
             };
 
