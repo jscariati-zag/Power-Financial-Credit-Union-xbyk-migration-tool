@@ -44,7 +44,7 @@ namespace ZAGK13Export.Converters
                 newContentItem.ItemData = new Dictionary<string, object>
                 {
                     { "Description", mediaFile.FileDescription },
-                    { "Image", new Asset{
+                    { "Asset_Image", new Asset{
                         AssetUrl = MediaLibraryHelper.GetPermanentUrl(mediaFile),
                         FileGuid = mediaFile.FileGUID
                     } }
@@ -61,7 +61,7 @@ namespace ZAGK13Export.Converters
                 newContentItem.ItemData = new Dictionary<string, object>
                 {
                     { "Description", mediaFile.FileDescription },
-                    { "Document", new Asset{
+                    { "Asset_Document", new Asset{
                         AssetUrl = MediaLibraryHelper.GetPermanentUrl(mediaFile),
                         FileGuid = mediaFile.FileGUID
                     } }
