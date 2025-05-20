@@ -11,6 +11,7 @@ namespace ZAGK13Export.Converters
     public interface INavigation
     {
         string DisplayName { get; }
-        List<Page> Pages { get; }
+
+        List<Page> Convert();
     }
 }

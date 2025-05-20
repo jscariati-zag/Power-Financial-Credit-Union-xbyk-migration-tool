@@ -113,4 +113,9 @@ namespace Common
     {
         public Guid OldGuid { get; set; }
     }
+
+    public class RelatedPageReference
+    {
+        public Guid OldGuid { get; set; }
+    }
 }

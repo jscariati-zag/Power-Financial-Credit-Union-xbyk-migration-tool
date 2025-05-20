@@ -1,4 +1,5 @@
 ﻿using Common;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,16 @@ namespace ZAGK13Export.Converters.Navigation
     {
         public string DisplayName => "Global Nav Items";
 
-        public List<Page> Pages => new List<Page>();
+        private readonly IConfiguration _config;
+
+        public GlobalNavigation(IConfiguration config)
+        {
+            _config = config;
+        }
+
+        public List<Page> Convert()
+        {
+            return new List<Page>();
+        }
     }
 }

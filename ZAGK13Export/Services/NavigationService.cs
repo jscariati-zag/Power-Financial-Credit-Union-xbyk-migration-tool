@@ -45,6 +45,7 @@ namespace ZAGK13Export.Services
                             Type = "Folder",
                             Language = targetLanguage,
                             Order = i,
+                            Children = navigationRegistryItem.Convert()
                         });
                         i++;
                     }

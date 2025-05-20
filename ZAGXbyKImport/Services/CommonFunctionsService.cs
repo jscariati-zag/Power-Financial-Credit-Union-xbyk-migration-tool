@@ -2,6 +2,7 @@
 using Azure;
 using CMS.ContentEngine;
 using CMS.DataEngine;
+using CMS.Websites;
 using Common;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -162,6 +163,37 @@ namespace ZAGXbyKImport.Services
                             }
                         }
                         fields.Add(item.Key, pageReferencesList);
+                        break;
+                    case RelatedPageReference:
+                        if (skipReferences) { break; }
+                        List<WebPageRelatedItem> webPageReferencelist = new List<WebPageRelatedItem>();
+                        var webPageReference = item.Value as RelatedPageReference;
+                        var webPageReferenceContentItem = FindPageByOldGuid(xbyKImport.Pages, webPageReference.OldGuid);
+                        if (webPageReferenceContentItem != null)
+                        {
+                            webPageReferencelist.Add(new WebPageRelatedItem
+                            {
+                                WebPageGuid = webPageReferenceContentItem.WebPageItemGUID
+                            });
+                        }
+                        fields.Add(item.Key, webPageReferencelist);
+                        break;
+                    case List<RelatedPageReference>:
+                        if (skipReferences) { break; }
+                        List<WebPageRelatedItem> webPageReferencesList = new List<WebPageRelatedItem>();
+                        var webPageReferences = item.Value as List<RelatedPageReference>;
+                        foreach (var pageReferencesItem in webPageReferences)
+                        {
+                            var pageReferencesContentItem = FindPageByOldGuid(xbyKImport.Pages, pageReferencesItem.OldGuid);
+                            if (pageReferencesContentItem != null)
+                            {
+                                webPageReferencesList.Add(new WebPageRelatedItem
+                                {
+                                    WebPageGuid = pageReferencesContentItem.WebPageItemGUID
+                                });
+                            }
+                        }
+                        fields.Add(item.Key, webPageReferencesList);
                         break;
                     case string:
                         var itemValue = item.Value as string;
