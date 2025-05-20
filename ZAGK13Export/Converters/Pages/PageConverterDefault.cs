@@ -47,6 +47,7 @@ namespace ZAGK13Export.Converters.Pages
                 ItemData = new Dictionary<string, object>
                 {
                     { "WebPage_Content_Name", page.DocumentName },
+                    { "WebPage_Content_HideHeaderFDIC", page.GetBooleanValue("HideHeaderFDIC", false) },
                     { "WebPage_Inclusions_Search", !page.DocumentSearchExcluded },
                     { "WebPage_Inclusions_SitemapHtml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },
                     { "WebPage_Inclusions_SitemapXml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },

@@ -1,4 +1,5 @@
-﻿using CMS.DocumentEngine;
+﻿using AngleSharp.Dom;
+using CMS.DocumentEngine;
 using CMS.Globalization;
 using Common;
 using Microsoft.Extensions.Configuration;
@@ -26,6 +27,14 @@ namespace ZAGK13Export.Converters.Pages
 
         public Page Convert(TreeNode page)
         {
+            var alerts = DocumentHelper.GetDocuments("custom.Alert")
+                            .Path(page.NodeAliasPath, PathTypeEnum.Section)
+                            .OrderBy(c => c.NodeOrder)
+                            .Select(r => new ContentReference
+                            {
+                                OldGuid = r.NodeGUID
+                            }).ToList();
+
             var newPage = new Page
             {
                 OldGuid = page.NodeGUID,
@@ -38,6 +47,7 @@ namespace ZAGK13Export.Converters.Pages
                 Published = page.IsPublished,
                 ItemData = new Dictionary<string, object>
                 {
+                    { "Alerts", alerts },
                     { "ContactBand_Title", page.GetValue("ContactTitle", "") },
                     { "ContactBand_WithinOklahoma", page.GetValue("ContactOklahoma", "") },
                     { "ContactBand_OutsideOklahoma", page.GetValue("ContactOutsideOklahoma", "") },
