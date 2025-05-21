@@ -72,7 +72,7 @@ namespace ZAGK13Export.Converters.Navigation
                         newPage.ItemData = new Dictionary<string, object>
                         {
                             { "NavItem_Content_Label", node.DocumentName },
-                            { "NavItem_Link_Url", node.GetValue<string>("PageRedirectUrl", "")},
+                            { "NavItem_Link_Url", node.GetValue<string>("PageRedirectUrl", "").TrimStart('~')},
                             { "NavItem_Link_Target", node.GetValue<string>("PageRedirectTarget", "")}
                         };
                         break;

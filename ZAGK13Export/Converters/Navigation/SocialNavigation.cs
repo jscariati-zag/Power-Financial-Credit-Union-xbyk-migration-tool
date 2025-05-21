@@ -10,20 +10,20 @@ using ZAGK13Export.Converters;
 
 namespace ZAGK13Export.Converters.Navigation
 {
-    class GlobalNavigation : INavigation
+    class SocialNavigation : INavigation
     {
-        public string DisplayName => "Global Nav Items";
+        public string DisplayName => "Social Nav Items";
 
         private readonly IConfiguration _config;
 
-        public GlobalNavigation(IConfiguration config)
+        public SocialNavigation(IConfiguration config)
         {
             _config = config;
         }
 
         public List<Page> Convert()
         {
-            return ConvertNavLevel("/Settings/Nav-Global", 1, 3);
+            return ConvertNavLevel("/Settings/Nav-Social", 1, 3);
         }
 
         public List<Page> ConvertNavLevel(string path, int level, int maxLevel)

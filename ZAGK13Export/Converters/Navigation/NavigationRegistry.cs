@@ -15,6 +15,10 @@ namespace ZAGK13Export.Converters.Navigation
         public static readonly INavigation PrimaryNavigation;
         public static readonly INavigation GlobalNavigation;
         public static readonly INavigation FooterNavigation;
+        public static readonly INavigation MegaMenuQuickLinksNavigation;
+        public static readonly INavigation SocialNavigation;
+        public static readonly INavigation SearchNavigation;
+        public static readonly INavigation LoginNavigation;
 
         public static readonly List<INavigation> All;
 
@@ -30,12 +34,20 @@ namespace ZAGK13Export.Converters.Navigation
             PrimaryNavigation = new PrimaryNavigation(_config);
             GlobalNavigation = new GlobalNavigation(_config);
             FooterNavigation = new FooterNavigation(_config);
+            MegaMenuQuickLinksNavigation = new MegaMenuQuickLinksNavigation(_config);
+            SocialNavigation = new SocialNavigation(_config);
+            SearchNavigation = new SearchNavigation(_config);
+            LoginNavigation = new LoginNavigation(_config);
 
             All = new List<INavigation>
             {
                 PrimaryNavigation,
                 GlobalNavigation,
-                FooterNavigation
+                FooterNavigation,
+                MegaMenuQuickLinksNavigation,
+                SocialNavigation,
+                SearchNavigation,
+                LoginNavigation
             };
         }
     }
