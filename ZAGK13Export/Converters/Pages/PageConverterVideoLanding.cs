@@ -45,7 +45,7 @@ namespace ZAGK13Export.Converters.Pages
                 Type = "Page",
                 DisplayName = page.DocumentName,
                 ContentType = TargetType,
-                WidgetConfiguration = _commonConverterService.ConvertPageWidgets(page, _config.GetValue<string>("ComponentContainerType"), "EditableArea_01"),
+                WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
                 TemplateConfiguration = new TemplateConfiguration
                 {
                     identifier = "Custom.WebPage.VideoLanding"

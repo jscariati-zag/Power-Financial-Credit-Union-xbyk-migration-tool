@@ -35,7 +35,7 @@ namespace ZAGK13Export.Converters.Pages
                 Type = "Page",
                 DisplayName = page.DocumentName,
                 ContentType = TargetType,
-                WidgetConfiguration = _commonConverterService.ConvertDefaultPageWidgets(page, _config.GetValue<string>("ComponentContainerType")),
+                WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
                 TemplateConfiguration = new TemplateConfiguration
                 {
                     identifier = "Custom.WebPage.Default"
