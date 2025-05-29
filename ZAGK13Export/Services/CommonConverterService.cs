@@ -106,7 +106,7 @@ namespace ZAGK13Export.Services
             return widgetConfiguration;
         }
 
-        public WidgetConfiguration? ConvertDefaultPageWidgets(TreeNode page, string containerType)
+        public WidgetConfiguration? ConvertPageWidgetsAlt(TreeNode page, string containerType)
         {
             WidgetConfiguration? widgetConfiguration = new WidgetConfiguration
             {
