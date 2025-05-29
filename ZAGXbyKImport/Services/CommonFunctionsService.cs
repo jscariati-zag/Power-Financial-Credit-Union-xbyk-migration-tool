@@ -36,15 +36,18 @@ namespace ZAGXbyKImport.Services
         {
             if (widgetConfiguration != null && widgetConfiguration.editableAreas[0] != null)
             {
-                foreach (var section in widgetConfiguration.editableAreas[0].sections)
+                foreach (var editableArea in widgetConfiguration.editableAreas)
                 {
-                    foreach (var zone in section.zones)
+                    foreach (var section in editableArea.sections)
                     {
-                        foreach (var widget in zone.widgets)
+                        foreach (var zone in section.zones)
                         {
-                            foreach (var variant in widget.variants)
+                            foreach (var widget in zone.widgets)
                             {
-                                variant.properties = ConvertItemData(variant.properties, skipReferences);
+                                foreach (var variant in widget.variants)
+                                {
+                                    variant.properties = ConvertItemData(variant.properties, skipReferences);
+                                }
                             }
                         }
                     }
