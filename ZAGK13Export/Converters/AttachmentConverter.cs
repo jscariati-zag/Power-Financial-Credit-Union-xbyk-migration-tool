@@ -25,22 +25,40 @@ namespace ZAGK13Export.Converters
 
         public ContentItem Convert(AttachmentInfo attachment)
         {
-            var newContentItem = new ContentItem
+            ContentItem? newContentItem = new ContentItem();
+
+            if (_config.GetValue<string>("ImageExtensions").Split(';').Contains(attachment.AttachmentExtension.TrimStart('.')))
             {
-                OldGuid = attachment.AttachmentGUID,
-                DisplayName = attachment.AttachmentName,
-                ContentType = "Custom.Reusable_Image",
-                Language = _config.GetValue<string>("TargetLanguage"),
-                Published = true,
-                ItemData = new Dictionary<string, object>
+                newContentItem.OldGuid = attachment.AttachmentGUID;
+                newContentItem.DisplayName = attachment.AttachmentName;
+                newContentItem.ContentType = "Custom.Reusable_Image";
+                newContentItem.Language = _config.GetValue<string>("TargetLanguage");
+                newContentItem.Published = true;
+                newContentItem.ItemData = new Dictionary<string, object>
                 {
                     { "Description", attachment.AttachmentDescription },
-                    { "Image", new Asset{
+                    { "Asset_Image", new Asset{
                         AssetUrl = _config.GetValue<string>("BaseUrl") + Regex.Replace(AttachmentURLProvider.GetAttachmentUrl(attachment.AttachmentGUID, attachment.AttachmentName), "^~", ""),
                         FileGuid = attachment.AttachmentGUID
                     } }
-                }
-            };
+                };
+            }
+            else if (_config.GetValue<string>("DocumentExtensions").Split(';').Contains(attachment.AttachmentExtension.TrimStart('.')))
+            {
+                newContentItem.OldGuid = attachment.AttachmentGUID;
+                newContentItem.DisplayName = attachment.AttachmentName;
+                newContentItem.ContentType = "Custom.Reusable_Document";
+                newContentItem.Language = _config.GetValue<string>("TargetLanguage");
+                newContentItem.Published = true;
+                newContentItem.ItemData = new Dictionary<string, object>
+                {
+                    { "Description", attachment.AttachmentDescription },
+                    { "Asset_Document", new Asset{
+                        AssetUrl = _config.GetValue<string>("BaseUrl") + Regex.Replace(AttachmentURLProvider.GetAttachmentUrl(attachment.AttachmentGUID, attachment.AttachmentName), "^~", ""),
+                        FileGuid = attachment.AttachmentGUID
+                    } }
+                };
+            }
 
             return newContentItem;
         }
