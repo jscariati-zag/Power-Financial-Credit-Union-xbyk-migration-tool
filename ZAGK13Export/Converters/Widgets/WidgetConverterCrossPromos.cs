@@ -35,7 +35,7 @@ namespace ZAGK13Export.Converters.Widgets
                 .Select(r => new ContentReference
                 {
                         OldGuid = DocumentHelper.GetDocument(r.RightNodeId, _config.GetValue<string>("Culture"), treeProvider).NodeGUID
-                }).ToList();
+                }).Take(1).ToList();
 
             var newWidget = new Widget
             {
