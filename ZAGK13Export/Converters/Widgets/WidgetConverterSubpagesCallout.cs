@@ -48,7 +48,6 @@ namespace ZAGK13Export.Converters.Widgets
                             properties = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "key", page.GetValue<string>("Key", "") },
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "subHead", page.GetValue<string>("SubHead", "") },
                                 { "body", page.GetValue<string>("Body", "") },
@@ -63,7 +62,6 @@ namespace ZAGK13Export.Converters.Widgets
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "key", Guid.NewGuid().ToString() },
                                 { "title", Guid.NewGuid().ToString() },
                                 { "subhead", Guid.NewGuid().ToString() },
                                 { "body", Guid.NewGuid().ToString() },

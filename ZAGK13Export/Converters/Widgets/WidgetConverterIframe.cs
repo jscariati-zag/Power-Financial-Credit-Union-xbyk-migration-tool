@@ -34,7 +34,6 @@ namespace ZAGK13Export.Converters.Widgets
                             properties = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "key", page.GetValue<string>("Key", "") },
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "text", page.GetValue<string>("Text", "") },
                                 { "source", page.GetValue<string>("IframeSource", "") },
@@ -45,7 +44,6 @@ namespace ZAGK13Export.Converters.Widgets
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "key", Guid.NewGuid().ToString() },
                                 { "title", Guid.NewGuid().ToString() },
                                 { "text", Guid.NewGuid().ToString() },
                                 { "source", Guid.NewGuid().ToString() },

@@ -49,7 +49,6 @@ namespace ZAGK13Export.Converters.Widgets
                             properties = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "key", page.GetValue<string>("Key", "") },
                                 { "promoTitleH1", page.GetBooleanValue("PromoTitleH1", false) },
                                 { "promos", promos },
                                 { "anchorText", null }
@@ -57,7 +56,6 @@ namespace ZAGK13Export.Converters.Widgets
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "key", Guid.NewGuid().ToString() },
                                 { "promoTitleH1", Guid.NewGuid().ToString()},
                                 { "promos", Guid.NewGuid().ToString() },
                                 { "anchorText", Guid.NewGuid().ToString() }

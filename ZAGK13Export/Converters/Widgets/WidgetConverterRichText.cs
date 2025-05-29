@@ -33,14 +33,12 @@ namespace ZAGK13Export.Converters.Widgets
                             properties = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "key", page.GetValue<string>("Key", "") },
                                 { "richText", page.GetValue<string>("Text", "") },
                                 { "anchorText", null }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
-                                { "key", Guid.NewGuid().ToString() },
                                 { "richText", Guid.NewGuid().ToString() },
                                 { "anchorText", Guid.NewGuid().ToString() }
                             }
