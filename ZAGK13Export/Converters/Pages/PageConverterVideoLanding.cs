@@ -34,7 +34,7 @@ namespace ZAGK13Export.Converters.Pages
             var featuredVideos = RelationshipInfo.Provider.Get()
                 .Where(r => r.RelationshipNameId == featuredVideosRelationshipName.RelationshipNameId && r.LeftNodeId == page.NodeID)
                 .OrderBy(r => r.RelationshipOrder)
-                .Select(r => new PageReference
+                .Select(r => new RelatedPageReference
                 {
                     OldGuid = DocumentHelper.GetDocument(r.RightNodeId, _config.GetValue<string>("Culture"), treeProvider).NodeGUID
                 }).ToList();
