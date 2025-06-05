@@ -34,6 +34,7 @@ namespace ZAGK13Export.Converters.Widgets
                             properties = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
+                                { "ariaLabel", page.DocumentName },
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "skipCount", page.GetValue<int>("SkipCount", 1) },
                                 { "initialRows", page.GetValue<int>("InitialRows", 2) },
@@ -42,6 +43,7 @@ namespace ZAGK13Export.Converters.Widgets
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
+                                { "ariaLabel", Guid.NewGuid().ToString() },
                                 { "title", Guid.NewGuid().ToString() },
                                 { "skipCount", Guid.NewGuid().ToString() },
                                 { "initialRows", Guid.NewGuid().ToString() },

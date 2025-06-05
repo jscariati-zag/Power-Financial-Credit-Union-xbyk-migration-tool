@@ -41,6 +41,7 @@ namespace ZAGK13Export.Converters.Widgets
                 type = TargetType,
                 properties = new Dictionary<string, object>
                 {
+                    { "ariaLabel", page.DocumentName },
                     { "title", page.GetValue("Title", "") },
                     { "text", page.GetValue("Text", "") },
                     { "guid", sectionGuid },
@@ -49,6 +50,7 @@ namespace ZAGK13Export.Converters.Widgets
                 zones = new List<Zone>(),
                 fieldIdentifiers = new Dictionary<string, object>
                 {
+                    { "ariaLabel", Guid.NewGuid().ToString() },
                     { "title", Guid.NewGuid().ToString() },
                     { "text", Guid.NewGuid().ToString() },
                     { "panels", Guid.NewGuid().ToString() },

@@ -34,6 +34,7 @@ namespace ZAGK13Export.Converters.Widgets
                             properties = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
+                                { "ariaLabel", page.DocumentName },
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "defermentOptionYear", page.GetValue<string>("Year", "") },
                                 { "defermentOptionMonth", page.GetValue<string>("Month", "") },
@@ -43,6 +44,7 @@ namespace ZAGK13Export.Converters.Widgets
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
+                                { "ariaLabel", Guid.NewGuid().ToString() },
                                 { "title", Guid.NewGuid().ToString() },
                                 { "defermentOptionYear", Guid.NewGuid().ToString() },
                                 { "defermentOptionMonth", Guid.NewGuid().ToString() },
