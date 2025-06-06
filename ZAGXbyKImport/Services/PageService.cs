@@ -64,6 +64,13 @@ namespace ZAGXbyKImport.Services
 
         public async Task AddPages(List<Page> pages, int parentWebPageItemID)
         {
+            // apply sequential order to address cases where multiple pages had the same NodeOrder
+            pages = pages.OrderBy(p => p.Order).Select((page, index) =>
+            {
+                page.Order = index;
+                return page;
+            }).ToList();
+
             // add pages in reverse order because Kentico adds new pages to the top of the list
             foreach (var page in pages.OrderByDescending(p => p.Order))
             {
