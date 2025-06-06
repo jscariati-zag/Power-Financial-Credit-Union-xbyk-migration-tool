@@ -39,8 +39,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "text", page.GetValue<string>("Text", "") },
                                 { "source", page.GetValue<string>("IframeSource", "") },
                                 { "height", page.GetValue<string>("IframeHeight", "") },
-                                { "transcriptURL", page.GetValue<string>("IframeTranscript", "") },
-                                { "anchorText", null }
+                                { "transcriptURL", page.GetValue<string>("IframeTranscript", "") }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -50,8 +49,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "text", Guid.NewGuid().ToString() },
                                 { "source", Guid.NewGuid().ToString() },
                                 { "height", Guid.NewGuid().ToString() },
-                                { "transcriptURL", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "transcriptURL", Guid.NewGuid().ToString() }
                             }
                         }
                     }

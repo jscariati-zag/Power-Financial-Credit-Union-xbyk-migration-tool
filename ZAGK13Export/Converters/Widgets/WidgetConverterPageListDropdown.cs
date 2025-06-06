@@ -54,8 +54,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "dropdownDefaultValue", page.GetValue<string>("DropdownDefaultValue", "") },
                                 { "dropdownLabelPrefix", page.GetValue<string>("DropdownLabelPrefix", "") },
                                 { "dropdownLabelSuffix", page.GetValue<string>("DropdownLabelSuffix", "") },
-                                { "targetParent", targetParent },
-                                { "anchorText", null }
+                                { "targetParent", targetParent }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -66,8 +65,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "dropdownDefaultValue", Guid.NewGuid().ToString() },
                                 { "dropdownLabelPrefix", Guid.NewGuid().ToString() },
                                 { "dropdownLabelSuffix", Guid.NewGuid().ToString() },
-                                { "targetParent", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "targetParent", Guid.NewGuid().ToString() }
                             }
                         }
                     }

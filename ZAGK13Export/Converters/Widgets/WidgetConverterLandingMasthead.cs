@@ -37,8 +37,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "text", page.GetValue<string>("Text", "") },
                                 { "ctas", _fieldConverters.ConvertCtas(page.GetValue<string>("Ctas", "")) },
-                                { "image", _fieldConverters.ConvertMediaItemReference(page.GetValue("Image", "")) },
-                                { "anchorText", null }
+                                { "image", _fieldConverters.ConvertMediaItemReference(page.GetValue("Image", "")) }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -47,8 +46,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "title", Guid.NewGuid().ToString() },
                                 { "text", Guid.NewGuid().ToString() },
                                 { "ctas", Guid.NewGuid().ToString() },
-                                { "image", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "image", Guid.NewGuid().ToString() }
                             }
                         }
                     }

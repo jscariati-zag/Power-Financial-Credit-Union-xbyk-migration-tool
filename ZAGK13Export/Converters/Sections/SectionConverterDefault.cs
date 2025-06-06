@@ -43,8 +43,7 @@ namespace ZAGK13Export.Converters.Widgets
                 fieldIdentifiers = new Dictionary<string, object>
                 {
                     { "background", Guid.NewGuid().ToString() },
-                    { "guid", Guid.NewGuid().ToString() },
-                    { "anchorText", Guid.NewGuid().ToString() }
+                    { "guid", Guid.NewGuid().ToString() }
                 }
             };
 

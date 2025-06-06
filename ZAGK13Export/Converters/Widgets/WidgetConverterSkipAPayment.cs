@@ -38,8 +38,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "defermentOptionYear", page.GetValue<string>("Year", "") },
                                 { "defermentOptionMonth", page.GetValue<string>("Month", "") },
-                                { "skipDefermentOption", page.GetValue<string>("SkipDefermentOption", "") },
-                                { "anchorText", null }
+                                { "skipDefermentOption", page.GetValue<string>("SkipDefermentOption", "") }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -48,8 +47,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "title", Guid.NewGuid().ToString() },
                                 { "defermentOptionYear", Guid.NewGuid().ToString() },
                                 { "defermentOptionMonth", Guid.NewGuid().ToString() },
-                                { "skipDefermentOption", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "skipDefermentOption", Guid.NewGuid().ToString() }
                             }
                         }
                     }

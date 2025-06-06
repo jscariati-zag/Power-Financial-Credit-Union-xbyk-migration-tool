@@ -50,15 +50,13 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "ariaLabel", page.DocumentName },
-                                { "promos", promos },
-                                { "anchorText", null }
+                                { "promos", promos }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "ariaLabel", Guid.NewGuid().ToString() },
-                                { "promos", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "promos", Guid.NewGuid().ToString() }
                             }
                         }
                     }

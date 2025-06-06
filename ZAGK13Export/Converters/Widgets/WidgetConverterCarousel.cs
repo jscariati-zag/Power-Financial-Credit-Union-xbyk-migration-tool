@@ -42,15 +42,13 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "ariaLabel", page.DocumentName },
-                                { "carouselSlides", carouselSlides },
-                                { "anchorText", null }
+                                { "carouselSlides", carouselSlides }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "ariaLabel", Guid.NewGuid().ToString() },
-                                { "carouselSlides", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "carouselSlides", Guid.NewGuid().ToString() }
                             }
                         }
                     }

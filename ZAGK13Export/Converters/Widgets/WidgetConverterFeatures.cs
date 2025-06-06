@@ -37,8 +37,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "ariaLabel", page.DocumentName },
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "text", page.GetValue<string>("Text", "") },
-                                { "features", _fieldConverters.ConvertFeatures(page.GetValue<string>("Features", "")) },
-                                { "anchorText", null }
+                                { "features", _fieldConverters.ConvertFeatures(page.GetValue<string>("Features", "")) }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -46,8 +45,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "ariaLabel", Guid.NewGuid().ToString() },
                                 { "title", Guid.NewGuid().ToString() },
                                 { "text", Guid.NewGuid().ToString() },
-                                { "features", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "features", Guid.NewGuid().ToString() }
                             }
                         }
                     }

@@ -45,8 +45,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "ariaLabel", page.DocumentName },
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "text", page.GetValue<string>("Text", "") },
-                                { "bios", bios },
-                                { "anchorText", null }
+                                { "bios", bios }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -54,8 +53,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "ariaLabel", Guid.NewGuid().ToString() },
                                 { "title", Guid.NewGuid().ToString() },
                                 { "text", Guid.NewGuid().ToString() },
-                                { "bios", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "bios", Guid.NewGuid().ToString() }
                             }
                         }
                     }

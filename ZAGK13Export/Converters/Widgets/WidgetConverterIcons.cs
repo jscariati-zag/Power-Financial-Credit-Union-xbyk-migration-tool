@@ -51,16 +51,14 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "ariaLabel", page.DocumentName },
                                 { "background", page.GetValue<string>("Background", "") },
-                                { "icons", icons },
-                                { "anchorText", null }
+                                { "icons", icons }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "ariaLabel", Guid.NewGuid().ToString() },
                                 { "background", Guid.NewGuid().ToString()},
-                                { "icons", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "icons", Guid.NewGuid().ToString() }
                             }
                         }
                     }

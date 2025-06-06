@@ -37,8 +37,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "ariaLabel", page.DocumentName },
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "text", page.GetValue<string>("Text", "") },
-                                { "dinkytownCode", page.GetValue<string>("DinkytownCode", "") },
-                                { "anchorText", null }
+                                { "dinkytownCode", page.GetValue<string>("DinkytownCode", "") }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -46,8 +45,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "ariaLabel", Guid.NewGuid().ToString() },
                                 { "title", Guid.NewGuid().ToString() },
                                 { "text", Guid.NewGuid().ToString() },
-                                { "dinkytownCode", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "dinkytownCode", Guid.NewGuid().ToString() }
                             }
                         }
                     }

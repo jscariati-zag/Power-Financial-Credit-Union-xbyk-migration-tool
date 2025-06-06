@@ -57,8 +57,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "dropdownLabelPrefix", page.GetValue<string>("DropdownLabelPrefix", "") },
                                 { "dropdownLabelSuffix", page.GetValue<string>("DropdownLabelSuffix", "") },
                                 { "backgroundImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("BackgroundImage", "")) },
-                                { "targetParent", targetParent },
-                                { "anchorText", null }
+                                { "targetParent", targetParent }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -72,8 +71,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "dropdownLabelPrefix", Guid.NewGuid().ToString() },
                                 { "dropdownLabelSuffix", Guid.NewGuid().ToString() },
                                 { "backgroundImage", Guid.NewGuid().ToString() },
-                                { "targetParent", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "targetParent", Guid.NewGuid().ToString() }
                             }
                         }
                     }

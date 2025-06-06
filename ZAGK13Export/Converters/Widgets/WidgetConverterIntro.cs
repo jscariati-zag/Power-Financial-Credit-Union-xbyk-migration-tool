@@ -34,15 +34,13 @@ namespace ZAGK13Export.Converters.Widgets
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "ariaLabel", page.DocumentName },
-                                { "text", page.GetValue<string>("Text", "") },
-                                { "anchorText", null }
+                                { "text", page.GetValue<string>("Text", "") }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
                                 { "guid", Guid.NewGuid().ToString() },
                                 { "ariaLabel", Guid.NewGuid().ToString() },
-                                { "text", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "text", Guid.NewGuid().ToString() }
                             }
                         }
                     }

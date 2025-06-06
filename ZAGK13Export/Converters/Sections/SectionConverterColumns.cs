@@ -44,8 +44,7 @@ namespace ZAGK13Export.Converters.Widgets
                     { "ariaLabel", page.DocumentName },
                     { "title", page.GetValue("Title", "") },
                     { "text", page.GetValue("Text", "") },
-                    { "guid", sectionGuid },
-                    { "anchorText", null }
+                    { "guid", sectionGuid }
                 },
                 zones = new List<Zone>(),
                 fieldIdentifiers = new Dictionary<string, object>
@@ -54,8 +53,7 @@ namespace ZAGK13Export.Converters.Widgets
                     { "title", Guid.NewGuid().ToString() },
                     { "text", Guid.NewGuid().ToString() },
                     { "columns", Guid.NewGuid().ToString() },
-                    { "guid", Guid.NewGuid().ToString() },
-                    { "anchorText", Guid.NewGuid().ToString() }
+                    { "guid", Guid.NewGuid().ToString() }
                 }
             };
 
@@ -93,14 +91,12 @@ namespace ZAGK13Export.Converters.Widgets
                                         properties = new Dictionary<string, object>
                                         {
                                             { "guid", Guid.NewGuid().ToString() },
-                                            { "richText", columnText },
-                                            { "anchorText", null }
+                                            { "richText", columnText }
                                         },
                                         fieldIdentifiers = new Dictionary<string, object>
                                         {
                                             { "richText", Guid.NewGuid().ToString() },
-                                            { "guid", Guid.NewGuid().ToString() },
-                                            { "anchorText", Guid.NewGuid().ToString() }
+                                            { "guid", Guid.NewGuid().ToString() }
                                         }
                                     }
                                 }

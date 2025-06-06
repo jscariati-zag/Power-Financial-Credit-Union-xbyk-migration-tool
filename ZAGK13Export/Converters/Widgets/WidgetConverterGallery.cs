@@ -46,8 +46,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "style", page.GetValue<string>("Style", "") },
                                 { "title", page.GetValue<string>("Title", "") },
                                 { "text", page.GetValue<string>("Text", "") },
-                                { "galleryItems", galleryItems },
-                                { "anchorText", null }
+                                { "galleryItems", galleryItems }
                             },
                             fieldIdentifiers = new Dictionary<string, object>
                             {
@@ -56,8 +55,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 { "style", Guid.NewGuid().ToString() },
                                 { "title", Guid.NewGuid().ToString() },
                                 { "text", Guid.NewGuid().ToString() },
-                                { "galleryItems", Guid.NewGuid().ToString() },
-                                { "anchorText", Guid.NewGuid().ToString() }
+                                { "galleryItems", Guid.NewGuid().ToString() }
                             }
                         }
                     }
