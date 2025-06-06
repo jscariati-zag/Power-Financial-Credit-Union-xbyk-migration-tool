@@ -37,6 +37,7 @@ namespace ZAGK13Export.Converters.ContentItems
                 FolderName = FolderName,
                 ItemData = new Dictionary<string, object>
                 {
+                    { "Name", page.DocumentName },
                     { "Ctas", _fieldConverters.ConvertCtas(page.GetValue<string>("Ctas", "")) },
                     { "Benefits", page.GetValue<string>("Benefits", "") },
                     { "MaintenanceFee", page.GetValue<string>("MaintenanceFee", "") },

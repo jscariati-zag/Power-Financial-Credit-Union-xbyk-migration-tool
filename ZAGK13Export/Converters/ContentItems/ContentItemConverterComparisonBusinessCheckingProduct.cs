@@ -1,4 +1,5 @@
-﻿using CMS.DocumentEngine;
+﻿using Amazon.Runtime.Internal.Transform;
+using CMS.DocumentEngine;
 using Common;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -37,6 +38,7 @@ namespace ZAGK13Export.Converters.ContentItems
                 FolderName = FolderName,
                 ItemData = new Dictionary<string, object>
                 {
+                    { "Name", page.DocumentName },
                     { "Ctas", _fieldConverters.ConvertCtas(page.GetValue<string>("Ctas", "")) },
                     { "MonthlyMaintenanceFee", page.GetValue<string>("MonthlyMaintenanceFee", "") },
                     { "PerItemTransactionFee", page.GetValue<string>("PerItemTransactionFee", "") },
