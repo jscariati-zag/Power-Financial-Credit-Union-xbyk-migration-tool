@@ -59,7 +59,7 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
                     { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
                     { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
-                    { "Name", page.GetValue("BioName", "") },
+                    { "Name", page.GetValue("BioName", page.DocumentName) },
                     { "Title", page.GetValue("BioTitle", "") },
                     { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("BioImage", "")) },
                     { "Phone", page.GetValue("BioPhone", "") },
