@@ -31,7 +31,7 @@ namespace ZAGK13Export.Converters.Widgets
             var targetParent = RelationshipInfo.Provider.Get()
                 .Where(r => r.RelationshipNameId == relationshipName.RelationshipNameId && r.LeftNodeId == page.NodeID)
                 .OrderBy(r => r.RelationshipOrder)
-                .Select(r => new ContentReference
+                .Select(r => new PageReference
                 {
                     OldGuid = DocumentHelper.GetDocument(r.RightNodeId, _config.GetValue<string>("Culture"), treeProvider).NodeGUID
                 }).ToList();
