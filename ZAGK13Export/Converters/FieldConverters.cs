@@ -44,7 +44,7 @@ namespace ZAGK13Export.Converters
 
         public string ConvertCtas(string ctas)
         {
-            var ctasAr = ctas.Split("\r\n");
+            var ctasAr = ctas.Split(["\r\n", "\n"], StringSplitOptions.None);
 
             if (ctasAr.Length == 0)
             {
@@ -127,7 +127,7 @@ namespace ZAGK13Export.Converters
 
         public string ConvertFeatures(string features)
         {
-            var featuresAr = features.Split("\r\n");
+            var featuresAr = features.Split(["\r\n", "\n"], StringSplitOptions.None);
 
             if (featuresAr.Length == 0)
             {
