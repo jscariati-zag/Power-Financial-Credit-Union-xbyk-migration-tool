@@ -1,5 +1,6 @@
 ﻿using CMS.DataEngine;
 using CMS.DocumentEngine;
+using CMS.DocumentEngine.Routing;
 using Common;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -41,9 +42,10 @@ namespace ZAGK13Export.Converters.Pages
                     identifier = "Custom.WebPage.Default"
                 },
                 Language = _config.GetValue<string>("TargetLanguage"),
-                UrlSlug = page.NodeAlias,
+                UrlSlug = page.GetPageUrlPath(_config.GetValue<string>("Culture")).Slug,
                 Order = page.NodeOrder,
                 Published = page.IsPublished,
+                FormerUrls = _commonConverterService.ConvertFormerUrls(page),
                 ItemData = new Dictionary<string, object>
                 {
                     { "WebPage_Content_Name", page.DocumentName },

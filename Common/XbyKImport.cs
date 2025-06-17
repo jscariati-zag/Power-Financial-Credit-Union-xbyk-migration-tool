@@ -27,6 +27,8 @@ namespace Common
         public TemplateConfiguration TemplateConfiguration { get; set; }
         public Page Parent { get; set; }
         public List<Page> Children { get; set; }
+
+        public List<string> FormerUrls { get; set; }
     }
 
     public class WidgetConfiguration

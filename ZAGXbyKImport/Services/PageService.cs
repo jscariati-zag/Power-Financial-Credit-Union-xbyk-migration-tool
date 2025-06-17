@@ -15,6 +15,9 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 using Microsoft.Extensions.Configuration;
 using CMS.ContentEngine.Internal;
 using Azure;
+using CMS.Core.Internal;
+using CMS.Core;
+using Microsoft.Data.SqlClient;
 
 namespace ZAGXbyKImport.Services
 {
@@ -120,6 +123,27 @@ namespace ZAGXbyKImport.Services
                 page.WebPageItemGUID = newWebPageItem.WebPageItemGUID;
                 page.ContentItemGUID = ContentItemInfo.Provider.Get().FirstOrDefault(c => c.ContentItemID == newWebPageItem.WebPageItemContentItemID).ContentItemGUID;
 
+                if (page.FormerUrls?.Any() ?? false)
+                {
+                    var contentLanguageID = ContentLanguageInfo.Provider.Get().FirstOrDefault(l => l.ContentLanguageName == page.Language).ContentLanguageID;
+
+                    foreach(var formerUrl in page.FormerUrls)
+                    {
+                        string patchedUrl = formerUrl.TrimStart(['~']).TrimStart(['/']);
+                        string urlHash = HashPath(patchedUrl);
+                        var webPageFormerUrlPathInfo = new WebPageFormerUrlPathInfo
+                        {
+                            WebPageFormerUrlPath = patchedUrl,
+                            WebPageFormerUrlPathHash = urlHash,
+                            WebPageFormerUrlPathWebPageItemID = newWebPageItem.WebPageItemID,
+                            WebPageFormerUrlPathWebsiteChannelID = newWebPageItem.WebPageItemWebsiteChannelID,
+                            WebPageFormerUrlPathContentLanguageID = contentLanguageID,
+                            WebPageFormerUrlPathLastModified = Service.Resolve<IDateTimeNowService>().GetDateTimeNow()
+                        };
+                        WebPageFormerUrlPathInfo.Provider.Set(webPageFormerUrlPathInfo);
+                    }
+                }
+
             } else if(page.Type == "Folder")
             {
                 var createFolderParameters = new CreateFolderParameters(page.DisplayName,
@@ -131,6 +155,23 @@ namespace ZAGXbyKImport.Services
             }
 
             return webPageItemID;
+        }
+
+        public string HashPath(string path)
+        {
+            using var conn = new SqlConnection(config.GetConnectionString("CMSConnectionString"));
+            conn.Open();
+            var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT CONVERT(VARCHAR(64), HASHBYTES('SHA2_256', LOWER(@path)), 2)";
+            cmd.Parameters.AddWithValue("path", path);
+            if (cmd.ExecuteScalar() is string s)
+            {
+                return s;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         public async Task UpdatePageReferences()

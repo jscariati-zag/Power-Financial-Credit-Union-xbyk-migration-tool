@@ -276,5 +276,20 @@ namespace ZAGK13Export.Services
 
             return widgetConfiguration;
         }
+
+        public List<string> ConvertFormerUrls(TreeNode page)
+        {
+            List<string> formerUrls = new List<string>();
+
+            PageFormerUrlPathInfoProvider provider = new PageFormerUrlPathInfoProvider();
+            var formerUrlPaths = provider.Get().WhereEquals(nameof(PageFormerUrlPathInfo.PageFormerUrlPathNodeID), page.NodeID);
+
+            foreach(var formerUrlPath in formerUrlPaths)
+            {
+                formerUrls.Add(formerUrlPath.PageFormerUrlPathUrlPath);
+            }
+
+            return formerUrls;
+        }
     }
 }

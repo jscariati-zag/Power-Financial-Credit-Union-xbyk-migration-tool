@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Dom;
 using CMS.DocumentEngine;
+using CMS.DocumentEngine.Routing;
 using CMS.Globalization;
 using Common;
 using Microsoft.Extensions.Configuration;
@@ -42,7 +43,6 @@ namespace ZAGK13Export.Converters.Pages
                 DisplayName = page.DocumentName,
                 ContentType = TargetType,
                 Language = _config.GetValue<string>("TargetLanguage"),
-                UrlSlug = page.NodeAlias,
                 Order = page.NodeOrder,
                 Published = page.IsPublished,
                 ItemData = new Dictionary<string, object>

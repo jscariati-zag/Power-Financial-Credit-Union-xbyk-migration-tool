@@ -1,4 +1,5 @@
 ﻿using CMS.DocumentEngine;
+using CMS.DocumentEngine.Routing;
 using Common;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZAGK13Export.Services;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters.Pages
@@ -32,7 +34,7 @@ namespace ZAGK13Export.Converters.Pages
                 DisplayName = page.DocumentName,
                 ContentType = TargetType,
                 Language = _config.GetValue<string>("TargetLanguage"),
-                UrlSlug = page.NodeAlias,
+                UrlSlug = page.GetPageUrlPath(_config.GetValue<string>("Culture")).Slug,
                 Order = page.NodeOrder,
                 Published = page.IsPublished,
                 ItemData = new Dictionary<string, object>
