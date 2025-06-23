@@ -12,6 +12,6 @@ namespace ZAGK13Export.Converters
     {
         string Type { get; }
         string TargetType { get; }
-        Widget Convert(TreeNode input);
+        Widget? Convert(TreeNode input);
     }
 }

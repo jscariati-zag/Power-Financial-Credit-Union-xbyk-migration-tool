@@ -76,7 +76,11 @@ namespace ZAGK13Export.Services
                                             currentSection = _defaultSectionConverter.Convert(null);
                                             sections.Add(currentSection);
                                         }
-                                        currentSection.zones[0].widgets.Add(Task.FromResult(widgetConverter.Convert(component)).Result);
+                                        var widget = widgetConverter.Convert(component);
+                                        if (widget != null)
+                                        {
+                                            currentSection.zones[0].widgets.Add(widget);
+                                        }
                                     }
                                     else if (_sectionConverters.TryGetValue(component.ClassName, out var sectionConverter))
                                     {
@@ -164,7 +168,11 @@ namespace ZAGK13Export.Services
                                             currentSection = _defaultSectionConverter.Convert(null);
                                             sections.Add(currentSection);
                                         }
-                                        currentSection.zones[0].widgets.Add(Task.FromResult(widgetConverter.Convert(component)).Result);
+                                        var widget = widgetConverter.Convert(component);
+                                        if (widget != null)
+                                        {
+                                            currentSection.zones[0].widgets.Add(widget);
+                                        }
                                     }
                                     else if (_sectionConverters.TryGetValue(component.ClassName, out var sectionConverter))
                                     {
@@ -208,7 +216,11 @@ namespace ZAGK13Export.Services
                                             currentColumnsSection = _defaultSectionConverter.Convert(null);
                                             columnsSections.Add(currentColumnsSection);
                                         }
-                                        currentColumnsSection.zones[0].widgets.Add(Task.FromResult(widgetConverter.Convert(component)).Result);
+                                        var widget = widgetConverter.Convert(component);
+                                        if (widget != null)
+                                        {
+                                            currentColumnsSection.zones[0].widgets.Add(widget);
+                                        }
                                     }
                                     else if (_sectionConverters.TryGetValue(component.ClassName, out var sectionConverter))
                                     {
@@ -252,7 +264,11 @@ namespace ZAGK13Export.Services
                                             currentSecondarySection = _defaultSectionConverter.Convert(null);
                                             secondarySections.Add(currentSecondarySection);
                                         }
-                                        currentSecondarySection.zones[0].widgets.Add(Task.FromResult(widgetConverter.Convert(component)).Result);
+                                        var widget = widgetConverter.Convert(component);
+                                        if (widget != null)
+                                        {
+                                            currentSecondarySection.zones[0].widgets.Add(widget);
+                                        }
                                     }
                                     else if (_sectionConverters.TryGetValue(component.ClassName, out var sectionConverter))
                                     {

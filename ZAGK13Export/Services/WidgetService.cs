@@ -46,7 +46,11 @@ namespace ZAGK13Export.Services
 
             foreach (var component in components)
             {
-                widgets.Add(ConvertWidget(component.ClassName, component).Result);
+                var widget = ConvertWidget(component.ClassName, component).Result;
+                if (widget != null)
+                {
+                    widgets.Add(ConvertWidget(component.ClassName, component).Result);
+                }
             }
 
             return Task.FromResult(widgets);

@@ -120,4 +120,10 @@ namespace Common
     {
         public Guid OldGuid { get; set; }
     }
+
+    public class SelectedForm
+    {
+        public Guid? objectGuid { get; set; }
+        public string? objectCodeName { get; set; }
+    }
 }
