@@ -40,13 +40,18 @@ namespace ZAGXbyKImport.Services
                 {
                     foreach (var section in editableArea.sections)
                     {
+                        section.properties = ConvertItemData(section.properties, skipReferences);
+
                         foreach (var zone in section.zones)
                         {
                             foreach (var widget in zone.widgets)
                             {
-                                foreach (var variant in widget.variants)
+                                if (widget != null)
                                 {
-                                    variant.properties = ConvertItemData(variant.properties, skipReferences);
+                                    foreach (var variant in widget.variants)
+                                    {
+                                        variant.properties = ConvertItemData(variant.properties, skipReferences);
+                                    }
                                 }
                             }
                         }
