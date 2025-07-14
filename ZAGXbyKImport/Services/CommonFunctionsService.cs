@@ -111,7 +111,7 @@ namespace ZAGXbyKImport.Services
 
                         break;
                     case ContentReference:
-                        if(skipReferences) { break; }
+                        if (skipReferences) { break; }
                         List<ContentItemReference> contentReferencelist = new List<ContentItemReference>();
                         var contentReference = item.Value as ContentReference;
                         var contentReferenceContentItem = xbyKImport.ContentItems.Where(c => c.OldGuid == contentReference.OldGuid).FirstOrDefault();
@@ -227,7 +227,7 @@ namespace ZAGXbyKImport.Services
                 else if (page.Children != null && page.Children.Any())
                 {
                     var result = FindPageByOldGuid(page.Children, oldGuid);
-                    if(result != null)
+                    if (result != null)
                     {
                         return result;
                     }
@@ -245,31 +245,47 @@ namespace ZAGXbyKImport.Services
 
         public string ConvertMediaUrls(string itemValue)
         {
-            var pattern = @"""~?\/getmedia\/(?<guid>[0-9a-fA-F\-]{36})\/(?<filename>[^""/?]+)(?:\?[^""]*)?""";
+            var pattern = @"(?<="")~?/getmedia/(?<guid>[0-9a-fA-F\-]{36})/(?<filename>[^""/?]+)(?:\?[^""]*)?(?="")";
 
-            var match = Regex.Match(itemValue, pattern);
-
-            if (match.Success)
+            itemValue = Regex.Replace(itemValue, pattern, match =>
             {
                 Guid oldGuid = Guid.Parse(match.Groups["guid"].Value);
                 string filename = match.Groups["filename"].Value;
 
-                var contentItem = xbyKImport.ContentItems.Where(c => c.OldGuid == oldGuid).FirstOrDefault();
-
-                string replacement = "";
+                var contentItem = xbyKImport.ContentItems.FirstOrDefault(c => c.OldGuid == oldGuid);
                 if (contentItem != null)
                 {
-                    if (contentItem.ContentType == "Custom.Reusable_Image")
-                    {
-                        replacement = $"~/getContentAsset/{contentItem.ContentItemGUID.ToString()}/{config.GetValue<string>("ImageAssetFieldGUID")}/{filename}?language={contentItem.Language}";
-                    } else if (contentItem.ContentType == "Custom.Reusable_Document")
-                    {
-                        replacement = $"~/getContentAsset/{contentItem.ContentItemGUID.ToString()}/{config.GetValue<string>("DocumentAssetFieldGUID")}/{filename}?language={contentItem.Language}";
-                    }
+                    string? assetFieldGuid = contentItem.ContentType == "Custom.Reusable_Image"
+                        ? config.GetValue<string>("ImageAssetFieldGUID")
+                        : config.GetValue<string>("DocumentAssetFieldGUID");
+
+                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}";
                 }
 
-                itemValue = Regex.Replace(itemValue, pattern, replacement);
-            }
+                return match.Value; // fallback to original if not found
+            });
+
+            // check for direct path matches
+            var sourceSite = config.GetValue<string>("SourceSite");
+
+            var directPattern = $@"(?<="")~?/{Regex.Escape(sourceSite)}/media/(?:[^""/]+/)*(?<filename>[^""/]+)(?="")";
+
+            itemValue = Regex.Replace(itemValue, directPattern, match =>
+            {
+                string filename = match.Groups["filename"].Value;
+
+                var contentItem = xbyKImport.ContentItems.FirstOrDefault(c => c.OldDirectUrl == match.Value.TrimStart('~'));
+                if (contentItem != null)
+                {
+                    string? assetFieldGuid = contentItem.ContentType == "Custom.Reusable_Image"
+                        ? config.GetValue<string>("ImageAssetFieldGUID")
+                        : config.GetValue<string>("DocumentAssetFieldGUID");
+
+                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}";
+                }
+
+                return match.Value; // fallback to original if not found
+            });
 
             return itemValue;
         }

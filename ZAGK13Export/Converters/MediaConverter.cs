@@ -1,15 +1,7 @@
-﻿using CMS.DocumentEngine;
-using CMS.Helpers;
+﻿using CMS.Helpers;
 using CMS.MediaLibrary;
-using CMS.SiteProvider;
 using Common;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters
 {
@@ -26,7 +18,7 @@ namespace ZAGK13Export.Converters
         {
             var mediaLibraryInfo = MediaLibraryInfo.Provider.Get(mediaFile.FileLibraryID);
             string[] folderAr = mediaFile.FilePath.Split('/');
-            var folderName = "Media_" + mediaLibraryInfo.LibraryName;
+            var folderName = "Media_" + mediaLibraryInfo.LibraryFolder;
             if (folderAr.Length > 2)
             {
                 folderName += "_" + folderAr.Take(folderAr.Length - 1).Join("_");
@@ -36,6 +28,7 @@ namespace ZAGK13Export.Converters
             if (_config.GetValue<string>("ImageExtensions").Split(';').Contains(mediaFile.FileExtension.TrimStart('.')))
             {
                 newContentItem.OldGuid = mediaFile.FileGUID;
+                newContentItem.OldDirectUrl = "/" + _config.GetValue<string>("SourceSite") + "/media/" + mediaLibraryInfo.LibraryFolder + "/" + mediaFile.FilePath;
                 newContentItem.DisplayName = mediaFile.FileName;
                 newContentItem.ContentType = "Custom.Reusable_Image";
                 newContentItem.Language = _config.GetValue<string>("TargetLanguage");
@@ -50,9 +43,10 @@ namespace ZAGK13Export.Converters
                     } }
                 };
             }
-            else if(_config.GetValue<string>("DocumentExtensions").Split(';').Contains(mediaFile.FileExtension.TrimStart('.')))
+            else
             {
                 newContentItem.OldGuid = mediaFile.FileGUID;
+                newContentItem.OldDirectUrl = "/" + _config.GetValue<string>("SourceSite") + "/media/" + mediaLibraryInfo.LibraryFolder + "/" + mediaFile.FilePath;
                 newContentItem.DisplayName = mediaFile.FileName;
                 newContentItem.ContentType = "Custom.Reusable_Document";
                 newContentItem.Language = _config.GetValue<string>("TargetLanguage");
@@ -66,10 +60,6 @@ namespace ZAGK13Export.Converters
                         FileGuid = mediaFile.FileGUID
                     } }
                 };
-            }
-            else
-            {
-                return null;
             }
 
             return newContentItem;

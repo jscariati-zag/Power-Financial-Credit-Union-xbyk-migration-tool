@@ -43,7 +43,7 @@ namespace ZAGK13Export.Converters
                     } }
                 };
             }
-            else if (_config.GetValue<string>("DocumentExtensions").Split(';').Contains(attachment.AttachmentExtension.TrimStart('.')))
+            else
             {
                 newContentItem.OldGuid = attachment.AttachmentGUID;
                 newContentItem.DisplayName = attachment.AttachmentName;

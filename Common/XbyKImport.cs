@@ -82,6 +82,7 @@ namespace Common
     public class ContentItem
     {
         public Guid OldGuid { get; set; }
+        public string OldDirectUrl { get; set; }
         public int ContentItemID { get; set; }
         public Guid ContentItemGUID { get; set; }
         public string ContentType { get; set; }
