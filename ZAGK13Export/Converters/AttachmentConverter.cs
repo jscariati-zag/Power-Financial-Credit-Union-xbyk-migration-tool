@@ -30,13 +30,13 @@ namespace ZAGK13Export.Converters
             if (_config.GetValue<string>("ImageExtensions").Split(';').Contains(attachment.AttachmentExtension.TrimStart('.')))
             {
                 newContentItem.OldGuid = attachment.AttachmentGUID;
-                newContentItem.DisplayName = attachment.AttachmentName;
+                newContentItem.DisplayName = attachment.AttachmentName.Length > 100 ? attachment.AttachmentName.Substring(0, 100) : attachment.AttachmentName;
                 newContentItem.ContentType = "Custom.Reusable_Image";
                 newContentItem.Language = _config.GetValue<string>("TargetLanguage");
                 newContentItem.Published = true;
                 newContentItem.ItemData = new Dictionary<string, object>
                 {
-                    { "Description", attachment.AttachmentDescription },
+                    { "Description", attachment.AttachmentDescription.Length > 200 ? attachment.AttachmentDescription.Substring(0, 200) : attachment.AttachmentDescription },
                     { "Asset_Image", new Asset{
                         AssetUrl = _config.GetValue<string>("BaseUrl") + Regex.Replace(AttachmentURLProvider.GetAttachmentUrl(attachment.AttachmentGUID, attachment.AttachmentName), "^~", ""),
                         FileGuid = attachment.AttachmentGUID
@@ -46,13 +46,13 @@ namespace ZAGK13Export.Converters
             else
             {
                 newContentItem.OldGuid = attachment.AttachmentGUID;
-                newContentItem.DisplayName = attachment.AttachmentName;
+                newContentItem.DisplayName = attachment.AttachmentName.Length > 100 ? attachment.AttachmentName.Substring(0, 100) : attachment.AttachmentName;
                 newContentItem.ContentType = "Custom.Reusable_Document";
                 newContentItem.Language = _config.GetValue<string>("TargetLanguage");
                 newContentItem.Published = true;
                 newContentItem.ItemData = new Dictionary<string, object>
                 {
-                    { "Description", attachment.AttachmentDescription },
+                    { "Description", attachment.AttachmentDescription.Length > 200 ? attachment.AttachmentDescription.Substring(0, 200) : attachment.AttachmentDescription },
                     { "Asset_Document", new Asset{
                         AssetUrl = _config.GetValue<string>("BaseUrl") + Regex.Replace(AttachmentURLProvider.GetAttachmentUrl(attachment.AttachmentGUID, attachment.AttachmentName), "^~", ""),
                         FileGuid = attachment.AttachmentGUID
