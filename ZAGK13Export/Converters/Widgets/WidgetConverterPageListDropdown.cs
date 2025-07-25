@@ -27,7 +27,7 @@ namespace ZAGK13Export.Converters.Widgets
         public Widget Convert(TreeNode page)
         {
             TreeProvider treeProvider = new TreeProvider();
-            var relationshipName = RelationshipNameInfo.Provider.Get("custom.PartialPageListDropdown_31a9ed26-991b-4d8e-b5dc-6ff0440be64c");
+            var relationshipName = RelationshipNameInfo.Provider.Get("custom.PartialPageListDropdown_9dbe4a84-874d-4a50-98e4-e76948a3f0bd");
             var targetParent = RelationshipInfo.Provider.Get()
                 .Where(r => r.RelationshipNameId == relationshipName.RelationshipNameId && r.LeftNodeId == page.NodeID)
                 .OrderBy(r => r.RelationshipOrder)
