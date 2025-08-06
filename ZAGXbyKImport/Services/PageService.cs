@@ -111,10 +111,7 @@ namespace ZAGXbyKImport.Services
                 webPageItemID = await webPageManager.Create(createPageParameters);
                 page.WebPageItemID = webPageItemID;
 
-                if (page.Published)
-                {
-                    await webPageManager.TryPublish(webPageItemID, page.Language);
-                }
+                await webPageManager.TryPublish(webPageItemID, page.Language);
 
                 var newWebPageItem = WebPageItemInfo.Provider.Get()
                                     .WhereEquals(nameof(WebPageItemInfo.WebPageItemID), webPageItemID)
@@ -194,7 +191,7 @@ namespace ZAGXbyKImport.Services
 
         public async Task UpdatePageReference(Page page)
         {
-            if(page.Type != "Page") { return; }
+            if (page.Type != "Page") { return; }
 
             ContentItemData updatedItemData = new ContentItemData(commonFunctionsService.ConvertItemData(page.ItemData, false));
             UpdateDraftData updateDraftData = new UpdateDraftData(updatedItemData);
@@ -211,9 +208,12 @@ namespace ZAGXbyKImport.Services
                                         page.Language,
                                         updateDraftData);
 
-            if (page.Published)
+
+            await webPageManager.TryPublish(page.WebPageItemID, page.Language);
+
+            if (!page.Published)
             {
-                await webPageManager.TryPublish(page.WebPageItemID, page.Language);
+                await webPageManager.TryUnpublish(page.WebPageItemID, page.Language);
             }
         }
     }

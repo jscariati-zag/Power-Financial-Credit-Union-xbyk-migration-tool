@@ -155,10 +155,8 @@ namespace ZAGXbyKImport.Services
 
             // Creates the content item in the database
             contentItemID = await contentItemManager.Create(createParams, itemData);
-            if (contentItem.Published)
-            {
-                await contentItemManager.TryPublish(contentItemID, contentItem.Language);
-            }
+            await contentItemManager.TryPublish(contentItemID, contentItem.Language);
+
             contentItem.ContentItemID = contentItemID;
 
             if (!contentItem.FolderName.IsNullOrEmpty())
@@ -190,9 +188,11 @@ namespace ZAGXbyKImport.Services
                                         contentItem.Language,
                                         updatedItemData);
 
-            if (contentItem.Published)
+            await contentItemManager.TryPublish(contentItem.ContentItemID, contentItem.Language);
+
+            if (!contentItem.Published)
             {
-                await contentItemManager.TryPublish(contentItem.ContentItemID, contentItem.Language);
+                await contentItemManager.TryUnpublish(contentItem.ContentItemID, contentItem.Language);
             }
         }
     }
