@@ -239,11 +239,15 @@ namespace ZAGXbyKImport.Services
 
         public string ConvertTextReferences(string itemValue)
         {
-            itemValue = ConvertMediaUrls(itemValue);
+            var imageAssetFieldGuid = config.GetValue<string>("ImageAssetFieldGUID");
+            var documentAssetFieldGuid = config.GetValue<string>("DocumentAssetFieldGUID");
+            var sourceSite = config.GetValue<string>("SourceSite");
+            itemValue = ConvertMediaUrls(itemValue, imageAssetFieldGuid, documentAssetFieldGuid, sourceSite);
+            itemValue = ConvertAttachmentUrls(itemValue, imageAssetFieldGuid, documentAssetFieldGuid);
             return itemValue;
         }
 
-        public string ConvertMediaUrls(string itemValue)
+        public string ConvertMediaUrls(string itemValue, string imageAssetFieldGuid, string documentAssetFieldGuid, string sourceSite)
         {
             var pattern = @"(?<="")~?/getmedia/(?<guid>[0-9a-fA-F\-]{36})/(?<filename>[^""/?]+)(?:\?[^""]*)?(?="")";
 
@@ -256,8 +260,8 @@ namespace ZAGXbyKImport.Services
                 if (contentItem != null)
                 {
                     string? assetFieldGuid = contentItem.ContentType == "Custom.Reusable_Image"
-                        ? config.GetValue<string>("ImageAssetFieldGUID")
-                        : config.GetValue<string>("DocumentAssetFieldGUID");
+                        ? imageAssetFieldGuid
+                        : documentAssetFieldGuid;
 
                     return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}";
                 }
@@ -266,7 +270,6 @@ namespace ZAGXbyKImport.Services
             });
 
             // check for direct path matches
-            var sourceSite = config.GetValue<string>("SourceSite");
 
             var directPattern = $@"(?<="")~?/{Regex.Escape(sourceSite)}/media/(?:[^""/]+/)*(?<filename>[^""/]+)(?="")";
 
@@ -278,8 +281,33 @@ namespace ZAGXbyKImport.Services
                 if (contentItem != null)
                 {
                     string? assetFieldGuid = contentItem.ContentType == "Custom.Reusable_Image"
-                        ? config.GetValue<string>("ImageAssetFieldGUID")
-                        : config.GetValue<string>("DocumentAssetFieldGUID");
+                        ? imageAssetFieldGuid
+                        : documentAssetFieldGuid;
+
+                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}";
+                }
+
+                return match.Value; // fallback to original if not found
+            });
+
+            return itemValue;
+        }
+
+        public string ConvertAttachmentUrls(string itemValue, string imageAssetFieldGuid, string documentAssetFieldGuid)
+        {
+            var pattern = @"(?<="")~?/getattachment/(?<guid>[0-9a-fA-F\-]{36})/(?<filename>[^""/?]+)(?:\?[^""]*)?(?="")";
+
+            itemValue = Regex.Replace(itemValue, pattern, match =>
+            {
+                Guid oldGuid = Guid.Parse(match.Groups["guid"].Value);
+                string filename = match.Groups["filename"].Value;
+
+                var contentItem = xbyKImport.ContentItems.FirstOrDefault(c => c.OldGuid == oldGuid);
+                if (contentItem != null)
+                {
+                    string? assetFieldGuid = contentItem.ContentType == "Custom.Reusable_Image"
+                        ? imageAssetFieldGuid
+                        : documentAssetFieldGuid;
 
                     return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}";
                 }
