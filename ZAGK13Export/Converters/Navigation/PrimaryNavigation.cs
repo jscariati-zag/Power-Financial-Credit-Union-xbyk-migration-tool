@@ -80,7 +80,7 @@ namespace ZAGK13Export.Converters.Navigation
                         newPage.ItemData = new Dictionary<string, object>
                         {
                             { "NavItem_Content_Label", node.DocumentName },
-                            { "NavItem_Link_Page", new RelatedPageReference
+                            { "NavItem_Link_Page", new PageReference
                                 {
                                     OldGuid = node.NodeGUID
                                 }
