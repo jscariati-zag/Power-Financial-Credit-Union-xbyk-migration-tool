@@ -64,7 +64,7 @@ namespace ZAGK13Export.Converters.Widgets
                                 .Culture(_config.GetValue<string>("Culture"))
                                 .WithCoupledColumns()
                                 .NestingLevel(1)
-                                .Published();
+                                .Published().OrderBy(n => n.NodeOrder);
 
             if (columns.Any())
             {
