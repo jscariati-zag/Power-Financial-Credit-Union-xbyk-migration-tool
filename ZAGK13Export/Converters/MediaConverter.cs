@@ -19,7 +19,7 @@ namespace ZAGK13Export.Converters
             var mediaLibraryInfo = MediaLibraryInfo.Provider.Get(mediaFile.FileLibraryID);
             string[] folderAr = mediaFile.FilePath.Split('/');
             var folderName = "Media_" + mediaLibraryInfo.LibraryFolder;
-            if (folderAr.Length > 2)
+            if (folderAr.Length > 1)
             {
                 folderName += "_" + folderAr.Take(folderAr.Length - 1).Join("_");
             }
