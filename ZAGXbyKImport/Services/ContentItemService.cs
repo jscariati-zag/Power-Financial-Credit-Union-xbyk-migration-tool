@@ -6,6 +6,7 @@ using CMS.Websites;
 using Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.X509.Qualified;
 using System;
 using System.Collections;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using URLRedirection;
 
 namespace ZAGXbyKImport.Services
 {
@@ -123,6 +125,10 @@ namespace ZAGXbyKImport.Services
             {
                 await contentItemManager.Delete(item.SystemFields.ContentItemID, await GetLanguageName(item.SystemFields.ContentItemCommonDataContentLanguageID));
             }
+
+            // delete any redirects not created by Kentico's migration toolkit
+            var where = new WhereCondition().WhereNotEquals("RedirectionMigrated", 1);
+            RedirectionTableInfo.Provider.BulkDelete(where);
         }
 
         public async Task<string> GetLanguageName(int languageId)
@@ -151,7 +157,7 @@ namespace ZAGXbyKImport.Services
                                                                 contentItem.Language,
                                                                 config.GetValue<string>("WorkspaceName"));            
 
-            ContentItemData itemData = new ContentItemData(commonFunctionsService.ConvertItemData(contentItem.ItemData, true));
+            ContentItemData itemData = new ContentItemData(commonFunctionsService.ConvertItemData(contentItem.ItemData, true, contentItem));
 
             // Creates the content item in the database
             contentItemID = await contentItemManager.Create(createParams, itemData);
@@ -181,7 +187,7 @@ namespace ZAGXbyKImport.Services
 
         public async Task UpdateContentItemReference(ContentItem contentItem)
         {
-            ContentItemData updatedItemData  = new ContentItemData(commonFunctionsService.ConvertItemData(contentItem.ItemData, false));
+            ContentItemData updatedItemData  = new ContentItemData(commonFunctionsService.ConvertItemData(contentItem.ItemData, false, contentItem));
 
             await contentItemManager.TryCreateDraft(contentItem.ContentItemID, contentItem.Language);
             await contentItemManager.TryUpdateDraft(contentItem.ContentItemID,

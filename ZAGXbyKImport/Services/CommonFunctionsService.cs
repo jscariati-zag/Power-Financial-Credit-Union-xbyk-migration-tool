@@ -2,9 +2,11 @@
 using Azure;
 using CMS.ContentEngine;
 using CMS.DataEngine;
+using CMS.Membership;
 using CMS.Websites;
 using Common;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
@@ -17,6 +19,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using URLRedirection;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGXbyKImport.Services
@@ -85,8 +88,26 @@ namespace ZAGXbyKImport.Services
             }
         }
 
-        public Dictionary<string, object> ConvertItemData(Dictionary<string, object> itemData, bool skipReferences)
+        public void AddMediaRedirect(string oldUrl, string newUrl, string type)
         {
+            var provider = RedirectionTableInfo.Provider;
+            var redirect = new RedirectionTableInfo
+            {
+                RedirectionEnabled = true,
+                RedirectionOriginalURL = oldUrl,
+                RedirectionTargetURL = newUrl,
+                RedirectionType = type,
+                RedirectionSiteID = config.GetValue<int>("WebsiteChannelID"),
+                RedirectionMigrated = false
+            };
+
+            provider.BulkInsert([redirect]);
+        }
+
+        public Dictionary<string, object> ConvertItemData(Dictionary<string, object> itemData, bool skipReferences, ContentItem? contentItem = null)
+        {
+            var imageAssetFieldGuid = config.GetValue<string>("ImageAssetFieldGUID");
+            var documentAssetFieldGuid = config.GetValue<string>("DocumentAssetFieldGUID");
             Dictionary<string, object> fields = new Dictionary<string, object>();
 
             foreach (var item in itemData)
@@ -97,17 +118,30 @@ namespace ZAGXbyKImport.Services
                         var asset = item.Value as Asset;
                         var stream = GetStreamFromUrlAsync(asset.AssetUrl).Result;
                         if (stream == null) { break; }
+                        var filename = Path.GetFileName(new Uri(asset.AssetUrl).AbsolutePath);
                         var assetMetadata = new ContentItemAssetMetadata()
                         {
                             Extension = Path.GetExtension(new Uri(asset.AssetUrl).AbsolutePath),
                             Identifier = asset.FileGuid,
                             LastModified = DateTime.Now,
-                            Name = Path.GetFileName(new Uri(asset.AssetUrl).AbsolutePath),
+                            Name = filename,
                             Size = stream.Length
                         };
                         var fileSource = new ContentItemAssetStreamSource((CancellationToken cancellationToken) => Task.FromResult<System.IO.Stream>(stream));
                         var assetMetadataWithSource = new ContentItemAssetMetadataWithSource(fileSource, assetMetadata);
                         fields.Add(item.Key, assetMetadataWithSource);
+
+                        if (!skipReferences)
+                        {
+                            string? assetFieldGuid = contentItem.ContentType == "Custom.Reusable_Image"
+                            ? imageAssetFieldGuid
+                            : documentAssetFieldGuid;
+
+                            if (!contentItem.OldDirectUrl.IsNullOrEmpty())
+                            {
+                                AddMediaRedirect(contentItem.OldDirectUrl, $"/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}", "301");
+                            }
+                        }
 
                         break;
                     case ContentReference:
