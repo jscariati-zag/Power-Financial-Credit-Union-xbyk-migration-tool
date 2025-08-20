@@ -139,7 +139,7 @@ namespace ZAGXbyKImport.Services
 
                             if (!contentItem.OldDirectUrl.IsNullOrEmpty())
                             {
-                                AddMediaRedirect(contentItem.OldDirectUrl, $"/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}", "301");
+                                AddMediaRedirect(contentItem.OldDirectUrl, $"/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}", "302");
                             }
                         }
 
