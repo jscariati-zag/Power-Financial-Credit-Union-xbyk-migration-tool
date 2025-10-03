@@ -276,6 +276,7 @@ namespace ZAGXbyKImport.Services
             var imageAssetFieldGuid = config.GetValue<string>("ImageAssetFieldGUID");
             var documentAssetFieldGuid = config.GetValue<string>("DocumentAssetFieldGUID");
             var sourceSite = config.GetValue<string>("SourceSite");
+            itemValue = itemValue.Replace("~/", "/");
             itemValue = ConvertMediaUrls(itemValue, imageAssetFieldGuid, documentAssetFieldGuid, sourceSite);
             itemValue = ConvertAttachmentUrls(itemValue, imageAssetFieldGuid, documentAssetFieldGuid);
             return itemValue;
