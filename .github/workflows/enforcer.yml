@@ -1,0 +1,15 @@
+##
+# .github/workflows/enforcer.yml
+#
+# Standard workflow that calls the shared policy-enforcer workflow
+#
+name: 🛡️ Policy Enforcer
+on:
+  pull_request:
+
+jobs:
+  enforce:
+    uses: ZAG-Interactive/workflows-policy/.github/workflows/policy-enforcer.yml@main
+    secrets: inherit
+    with:
+      target_branch: ${{ github.event.pull_request.base.ref }}
