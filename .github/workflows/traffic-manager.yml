@@ -1,0 +1,25 @@
+##
+# .github/workflows/traffic.yml
+#
+# Orchestrates PR management by calling separate reusable workflows.
+# This workflow coordinates merge conflict detection, labeling, and notifications.
+# Author: MWDelaney
+##
+
+name: "🚦 Pull Request Traffic Manager"
+on:
+  pull_request:  # Changed from pull_request_target
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: write
+
+jobs:
+  traffic:
+    uses: ZAG-Interactive/workflows-policy/.github/workflows/pull-request-traffic-manager.yml@main
+    secrets: inherit
+    with:
+      target_branch: ${{ github.event.pull_request.base.ref }}

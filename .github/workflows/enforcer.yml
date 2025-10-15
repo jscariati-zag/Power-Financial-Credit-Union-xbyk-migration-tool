@@ -3,9 +3,14 @@
 #
 # Standard workflow that calls the shared policy-enforcer workflow
 #
-name: 🛡️ Policy Enforcer
+name: 🛡️ Branch Policy Enforcer
 on:
   pull_request:
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: read
 
 jobs:
   enforce:
