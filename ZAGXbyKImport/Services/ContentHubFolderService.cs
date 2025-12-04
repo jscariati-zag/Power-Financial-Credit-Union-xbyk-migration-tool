@@ -40,23 +40,39 @@ namespace ZAGXbyKImport.Services
 
         public async Task DeleteContentHubFolders()
         {
-            IEnumerable<ContentFolderInfo> folders = contentFolderManager.Get().AsEnumerable();
+            Console.WriteLine("Deleting content hub folders...\r");
 
+            IEnumerable<ContentFolderInfo> folders = contentFolderManager.Get().AsEnumerable();
+            int totalFolders = folders.Count();
+            int i = 0;
             foreach (var folder in folders)
             {
                 if (!folder.IsRootFolder() && folder.ContentFolderWorkspaceID == config.GetValue<int>("WorkspaceID"))
                 {
                     await contentFolderManager.Delete(folder.ContentFolderID);
                 }
+                i++;
+                Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+                Console.Write($"\r   {totalFolders--} folders remaining");
             }
+            Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+            Console.WriteLine($"\r   COMPLETE");
         }
 
         public async Task AddContentHubFolders()
         {
+            Console.WriteLine("Adding content hub folders...\r");
+            int totalFolders = xbyKImport.ContentHubFolders.Count;
+            int i = 0;
             foreach (var folder in xbyKImport.ContentHubFolders)
             {
                 await AddContentHubFolder(folder);
+                i++;
+                Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+                Console.Write($"\r   {totalFolders--} folders remaining");
             }
+            Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+            Console.WriteLine($"\r   COMPLETE");
         }
 
         public async Task AddContentHubFolder(ContentHubFolder contentHubFolder)

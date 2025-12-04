@@ -119,16 +119,25 @@ namespace ZAGXbyKImport.Services
 
         public async Task DeleteContentItems()
         {
-            var items = await GetAll();
+            Console.WriteLine("Deleting content items...\r");
 
+            var items = await GetAll();
+            int totalItems = items.Count();
+
+            int i = 0;
             foreach (var item in items)
             {
                 await contentItemManager.Delete(item.SystemFields.ContentItemID, await GetLanguageName(item.SystemFields.ContentItemCommonDataContentLanguageID));
+                i++;
+                Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+                Console.Write($"\r   {totalItems--} items remaining");
             }
 
             // delete any redirects not created by Kentico's migration toolkit
             var where = new WhereCondition().WhereNotEquals("RedirectionMigrated", 1);
             RedirectionTableInfo.Provider.BulkDelete(where);
+            Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+            Console.WriteLine($"\r   COMPLETE");
         }
 
         public async Task<string> GetLanguageName(int languageId)
@@ -139,10 +148,18 @@ namespace ZAGXbyKImport.Services
 
         public async Task AddContentItems()
         {
+            Console.WriteLine("Adding content items...\r");
+            int totalItems = xbyKImport.ContentItems.Count;
+            int i = 0;
             foreach (var contentItem in xbyKImport.ContentItems)
             {
                 await AddContentItem(contentItem);
+                i++;
+                Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+                Console.Write($"\r   {totalItems--} items remaining");
             }
+            Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+            Console.WriteLine($"\r   COMPLETE");
         }
 
         public async Task AddContentItem(ContentItem contentItem)
@@ -179,10 +196,18 @@ namespace ZAGXbyKImport.Services
 
         public async Task UpdateContentItemReferences()
         {
+            Console.WriteLine("Updating content item references...\r");
+            int totalItems = xbyKImport.ContentItems.Count;
+            int i = 0;
             foreach (var contentItem in xbyKImport.ContentItems)
             {
                 await UpdateContentItemReference(contentItem);
+                i++;
+                Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+                Console.Write($"\r   {totalItems--} items remaining");
             }
+            Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+            Console.WriteLine($"\r   COMPLETE");
         }
 
         public async Task UpdateContentItemReference(ContentItem contentItem)

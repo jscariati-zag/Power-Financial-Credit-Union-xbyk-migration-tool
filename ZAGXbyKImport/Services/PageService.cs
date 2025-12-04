@@ -32,6 +32,8 @@ namespace ZAGXbyKImport.Services
         private readonly IContentQueryResultMapper contentQueryResultMapper;
         private readonly XbyKImport xbyKImport;
 
+        private int _remainingPages;
+
         public PageService(IConfiguration config,
                             CommonFunctionsService commonFunctionsService,
                             IContentQueryExecutor contentQueryExecutor,
@@ -57,12 +59,19 @@ namespace ZAGXbyKImport.Services
 
         public async Task DeletePages()
         {
+            Console.WriteLine("Deleting pages...\r");
             await webPageManager.DestroyChannelWebPages();
+            Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+            Console.WriteLine($"\r   COMPLETE");
         }
 
         public async Task AddPages()
         {
+            Console.WriteLine("Adding pages...\r");
+            _remainingPages = CountPages(xbyKImport.Pages);
             await AddPages(xbyKImport.Pages, 0);
+            Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+            Console.WriteLine($"\r   COMPLETE");
         }
 
         public async Task AddPages(List<Page> pages, int parentWebPageItemID)
@@ -78,6 +87,8 @@ namespace ZAGXbyKImport.Services
             foreach (var page in pages.OrderByDescending(p => p.Order))
             {
                 int newWebPageItemID = await AddPage(page, parentWebPageItemID);
+                Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+                Console.Write($"\r   {_remainingPages--} pages remaining");
                 if (page.Children != null && page.Children.Any())
                 {
                     await AddPages(page.Children, newWebPageItemID);
@@ -154,6 +165,22 @@ namespace ZAGXbyKImport.Services
             return webPageItemID;
         }
 
+        public int CountPages(IEnumerable<Page> pages)
+        {
+            int count = 0;
+
+            foreach (var page in pages)
+            {
+                count++; // count this page
+
+                if (page.Children != null && page.Children.Any())
+                    count += CountPages(page.Children);
+            }
+
+            return count;
+        }
+
+
         public string HashPath(string path)
         {
             using var conn = new SqlConnection(config.GetConnectionString("CMSConnectionString"));
@@ -173,7 +200,11 @@ namespace ZAGXbyKImport.Services
 
         public async Task UpdatePageReferences()
         {
+            Console.WriteLine("Updating page widgets and references...\r");
+            _remainingPages = CountPages(xbyKImport.Pages);
             await UpdatePageReferences(xbyKImport.Pages, 0);
+            Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+            Console.WriteLine($"\r   COMPLETE");
         }
 
         public async Task UpdatePageReferences(List<Page> pages, int parentWebPageItemID)
@@ -182,6 +213,9 @@ namespace ZAGXbyKImport.Services
             foreach (var page in pages.OrderByDescending(p => p.Order))
             {
                 await UpdatePageReference(page);
+                _remainingPages = CountPages(xbyKImport.Pages);
+                Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
+                Console.Write($"\r   {_remainingPages--} pages remaining");
                 if (page.Children != null && page.Children.Any())
                 {
                     await UpdatePageReferences(page.Children, page.WebPageItemID);
