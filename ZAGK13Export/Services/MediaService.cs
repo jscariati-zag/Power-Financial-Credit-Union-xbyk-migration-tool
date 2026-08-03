@@ -44,20 +44,25 @@ namespace ZAGK13Export.Services
 
             foreach (var library in libraries)
             {
-                _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryName, "Media");
-
-                string[] allFolders = Directory.GetDirectories(rootPath + library.LibraryFolder, "*", SearchOption.AllDirectories);
-
-                foreach (var folder in allFolders)
+                //only bring over blog banner images
+                if(library.LibraryDisplayName == "Blog Banners")
                 {
-                    string relativePath = Path.GetRelativePath(rootPath, folder);
-                    string[] folderAr = relativePath.Split('\\');
-                    string displayName = folderAr.Last();
-                    string name = "Media_" + folderAr.Join("_");
-                    string parentName = "Media_" + folderAr.Take(folderAr.Length - 1).Join("_");
-                    if (displayName != "__thumbnails")
+                    //Console.WriteLine($"\nLibrary " + library.LibraryDisplayName);
+                    _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryName, "Media");
+
+                    string[] allFolders = Directory.GetDirectories(rootPath + library.LibraryFolder, "*", SearchOption.AllDirectories);
+
+                    foreach (var folder in allFolders)
                     {
-                        _contentHubFolderService.AddContentHubFolder(displayName, name, parentName);
+                        string relativePath = Path.GetRelativePath(rootPath, folder);
+                        string[] folderAr = relativePath.Split('\\');
+                        string displayName = folderAr.Last();
+                        string name = "Media_" + folderAr.Join("_");
+                        string parentName = "Media_" + folderAr.Take(folderAr.Length - 1).Join("_");
+                        if (displayName != "__thumbnails")
+                        {
+                            _contentHubFolderService.AddContentHubFolder(displayName, name, parentName);
+                        }
                     }
                 }
             }
@@ -67,11 +72,30 @@ namespace ZAGK13Export.Services
         {
             foreach (var mediaFileInfo in GetMediaFiles().Result)
             {
-                var contentItem = ConvertMediaFile(mediaFileInfo).Result;
-                if (contentItem != null)
+                var libraryFolder = MediaLibraryInfo.Provider.Get(mediaFileInfo.FileLibraryID).LibraryFolder;
+                //only export blog banner images
+                //Console.WriteLine($"\nMedia File " + MediaLibraryInfo.Provider.Get(mediaFileInfo.FileLibraryID).LibraryFolder);
+                if (libraryFolder == "Blog-Banners")
                 {
-                    _export.ContentItems.Add(contentItem);
+                    var contentItem = ConvertMediaFile(mediaFileInfo).Result;
+                    if (contentItem != null)
+                    {
+                        _export.ContentItems.Add(contentItem);
+                    }
+
                 }
+                //if (libraryFolder == "Images")
+                //{
+                //    Console.WriteLine(mediaFileInfo.FileName);
+                //    if (mediaFileInfo.FileName == "ameris-opengraph" || mediaFileInfo.FileName == "open-graph")
+                //    {
+                //        var contentItem = ConvertMediaFile(mediaFileInfo).Result;
+                //        if (contentItem != null)
+                //        {
+                //            _export.ContentItems.Add(contentItem);
+                //        }
+                //    }
+                //}
             }
         }
 

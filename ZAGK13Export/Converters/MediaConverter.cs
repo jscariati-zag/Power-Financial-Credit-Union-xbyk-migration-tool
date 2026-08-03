@@ -29,6 +29,7 @@ namespace ZAGK13Export.Converters
             {
                 newContentItem.OldGuid = mediaFile.FileGUID;
                 newContentItem.OldDirectUrl = "/" + _config.GetValue<string>("SourceSite") + "/media/" + mediaLibraryInfo.LibraryFolder + "/" + mediaFile.FilePath;
+                newContentItem.ContentItemID = mediaFile.FileID; // will explicitly setting contentitemid let images work properly?
                 newContentItem.DisplayName = mediaFile.FileName.Length > 100 ? mediaFile.FileName.Substring(0, 100) : mediaFile.FileName;
                 newContentItem.ContentType = "Custom.Reusable_Image";
                 newContentItem.Language = _config.GetValue<string>("TargetLanguage");

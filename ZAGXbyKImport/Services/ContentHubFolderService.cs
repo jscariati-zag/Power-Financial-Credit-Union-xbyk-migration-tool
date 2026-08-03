@@ -100,6 +100,11 @@ namespace ZAGXbyKImport.Services
         public async Task<int> GetIDFromName(string name)
         {
             var folder = xbyKImport.ContentHubFolders.Where(f => f.Name == name).FirstOrDefault();
+            if(folder == null)
+            {
+                var altName = name.Replace("-", "");
+                folder = xbyKImport.ContentHubFolders.Where(f => f.Name == altName).FirstOrDefault();
+            }
             return folder.ContentFolderID;
         }
     }

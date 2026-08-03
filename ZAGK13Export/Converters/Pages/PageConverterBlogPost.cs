@@ -1,4 +1,6 @@
-﻿using CMS.DocumentEngine;
+﻿using Amazon.Runtime.Internal.Transform;
+using CMS.DataEngine;
+using CMS.DocumentEngine;
 using CMS.DocumentEngine.Routing;
 using Common;
 using Microsoft.Extensions.Configuration;
@@ -12,15 +14,15 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters.Pages
 {
-    class PageConverterHome : IPageConverter
+    class PageConverterBlogPost : IPageConverter
     {
-        public string Type => "custom.Homepage";
-        public string TargetType => "Custom.WebPage_Home";
+        public string Type => "custom.BlogDetail";
+        public string TargetType => "Custom.WebPage_BlogPost";
         private readonly IConfiguration _config;
         private readonly FieldConverters _fieldConverters;
         private readonly CommonConverterService _commonConverterService;
 
-        public PageConverterHome(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
+        public PageConverterBlogPost(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
         {
             _config = config;
             _fieldConverters = fieldConverters;
@@ -32,14 +34,15 @@ namespace ZAGK13Export.Converters.Pages
             string urlSlug = string.Empty;
             try
             {
-                var culture = _config.GetValue<string>("Culture");
                 var urlPathResult = page.GetPageUrlPath(_config.GetValue<string>("Culture"));
+                //var urlPathResult = page.GetPageUrlPath();
                 urlSlug = urlPathResult?.Slug ?? string.Empty;
             }
             catch (InvalidOperationException ex)
             {
                 // Log or handle the exception as needed
-                urlSlug = string.Empty;
+                //Console.WriteLine($"URL SLUG EMPTY: {ex} \n");
+                urlSlug = page.NodeAliasPath ?? string.Empty;
             }
 
             var newPage = new Page
@@ -48,10 +51,10 @@ namespace ZAGK13Export.Converters.Pages
                 Type = "Page",
                 DisplayName = page.DocumentName,
                 ContentType = TargetType,
-                WidgetConfiguration = _commonConverterService.ConvertPageWidgets(page, _config.GetValue<string>("ComponentContainerType"), "EditableArea_01"),
+                WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
                 TemplateConfiguration = new TemplateConfiguration
                 {
-                    identifier = "Custom.Web.WebPages.Home"
+                    identifier = "Package.Blog.WebPages.BlogPost"
                 },
                 Language = _config.GetValue<string>("TargetLanguage"),
                 //UrlSlug = urlSlug,
@@ -62,7 +65,7 @@ namespace ZAGK13Export.Converters.Pages
                 {
                     { "WebPage_Content_Name", page.DocumentName },
                     { "WebPage_Alias", page.NodeAlias },
-                    { "WebPage_Content_ToggleHeaderFdic", page.GetBooleanValue("HideHeaderFDIC", false) },
+                    { "WebPage_Content_HideHeaderFDIC", page.GetBooleanValue("HideHeaderFDIC", false) },
                     { "WebPage_Inclusions_Search", !page.DocumentSearchExcluded },
                     { "WebPage_Inclusions_SitemapHtml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },
                     { "WebPage_Inclusions_SitemapXml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },
@@ -70,13 +73,33 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Seo_MetaDescription", page.DocumentPageDescription },
                     { "WebPage_Seo_MetaKeywords", page.DocumentPageKeyWords },
                     { "WebPage_Seo_SchemaContent", page.GetValue("PageBaseSchemaContent", "") },
-                    { "WebPage_Seo_CanonicalUrl", page.GetValue("PageBaseCanonicalUrl", "") },
                     { "WebPage_Og_Title", page.GetValue("PageBaseOpenGraphTitle", "") },
                     { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
                     { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
-                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) }
+                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
+                    { "RichTextContent", page.GetValue("BlogContent", "") },
+                    //{ "Date", page.GetValue("Date", "") },
+                    { "Author", page.GetValue("Author", "") },
+                    //{ "Categories", page.GetValue("Category", "") }, //this will surely need adjustment
+                    { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("BlogImage", "")) },
+                    //related posts?
+
+                    //{ "WebPage_MastheadTitle", page.GetValue("MastheadTitle", "") },
+                    //{ "WebPage_MastheadText", page.GetValue("MastheadText", "") },
+                    //{ "WebPage_MastheadCtas", _fieldConverters.ConvertCtas(page.GetValue("MastheadCtas", "")) },
+                    //{ "WebPage_MastheadImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("MastheadImage", "")) },
+                    //{ "WebPage_SidebarCtasTitle", page.GetValue("SidebarCtasTitle", "") },
+                    //{ "WebPage_SubpageImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("SubpageImage", "")) },
+                    //{ "WebPage_SubpageText", page.GetValue("SubpageText", "") },
+                    //{ "WebPage_SubpageCtas", _fieldConverters.ConvertCtas(page.GetValue("SubpageCtas", "")) },
                 }
             };
+
+            DateTime tempDate;
+            if (DateTime.TryParse(page.GetValue("Date", ""), out tempDate))
+            {
+                newPage.ItemData.Add("Date", page.GetValue("Date", ""));
+            }
 
             return newPage;
         }

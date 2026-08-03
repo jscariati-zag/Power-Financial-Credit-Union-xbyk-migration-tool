@@ -1,4 +1,5 @@
-﻿using CMS.DocumentEngine;
+﻿using CMS.DataEngine;
+using CMS.DocumentEngine;
 using CMS.DocumentEngine.Routing;
 using Common;
 using Microsoft.Extensions.Configuration;
@@ -12,15 +13,15 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters.Pages
 {
-    class PageConverterHome : IPageConverter
+    class PageConverterBlogLifeStage : IPageConverter
     {
-        public string Type => "custom.Homepage";
-        public string TargetType => "Custom.WebPage_Home";
+        public string Type => "custom.BlogLifeStage";
+        public string TargetType => "Custom.WebPage_BlogLifeStage";
         private readonly IConfiguration _config;
         private readonly FieldConverters _fieldConverters;
         private readonly CommonConverterService _commonConverterService;
 
-        public PageConverterHome(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
+        public PageConverterBlogLifeStage(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
         {
             _config = config;
             _fieldConverters = fieldConverters;
@@ -32,15 +33,18 @@ namespace ZAGK13Export.Converters.Pages
             string urlSlug = string.Empty;
             try
             {
-                var culture = _config.GetValue<string>("Culture");
                 var urlPathResult = page.GetPageUrlPath(_config.GetValue<string>("Culture"));
                 urlSlug = urlPathResult?.Slug ?? string.Empty;
             }
             catch (InvalidOperationException ex)
             {
                 // Log or handle the exception as needed
-                urlSlug = string.Empty;
+                //Console.WriteLine($"URL SLUG EMPTY: {ex} \n");
+                urlSlug = page.NodeAliasPath ?? string.Empty;
             }
+
+            var testOrder = page.NodeOrder;
+
 
             var newPage = new Page
             {
@@ -48,10 +52,10 @@ namespace ZAGK13Export.Converters.Pages
                 Type = "Page",
                 DisplayName = page.DocumentName,
                 ContentType = TargetType,
-                WidgetConfiguration = _commonConverterService.ConvertPageWidgets(page, _config.GetValue<string>("ComponentContainerType"), "EditableArea_01"),
+                WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
                 TemplateConfiguration = new TemplateConfiguration
                 {
-                    identifier = "Custom.Web.WebPages.Home"
+                    identifier = "Package.Blog.WebPages.BlogLifeSTage"
                 },
                 Language = _config.GetValue<string>("TargetLanguage"),
                 //UrlSlug = urlSlug,
@@ -70,14 +74,20 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Seo_MetaDescription", page.DocumentPageDescription },
                     { "WebPage_Seo_MetaKeywords", page.DocumentPageKeyWords },
                     { "WebPage_Seo_SchemaContent", page.GetValue("PageBaseSchemaContent", "") },
-                    { "WebPage_Seo_CanonicalUrl", page.GetValue("PageBaseCanonicalUrl", "") },
                     { "WebPage_Og_Title", page.GetValue("PageBaseOpenGraphTitle", "") },
                     { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
                     { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
-                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) }
+                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
+                    //{ "WebPage_MastheadTitle", page.GetValue("MastheadTitle", "") },
+                    //{ "WebPage_MastheadText", page.GetValue("MastheadText", "") },
+                    //{ "WebPage_MastheadCtas", _fieldConverters.ConvertCtas(page.GetValue("MastheadCtas", "")) },
+                    //{ "WebPage_MastheadImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("MastheadImage", "")) },
+                    //{ "WebPage_SidebarCtasTitle", page.GetValue("SidebarCtasTitle", "") },
+                    //{ "WebPage_SubpageImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("SubpageImage", "")) },
+                    //{ "WebPage_SubpageText", page.GetValue("SubpageText", "") },
+                    //{ "WebPage_SubpageCtas", _fieldConverters.ConvertCtas(page.GetValue("SubpageCtas", "")) },
                 }
             };
-
             return newPage;
         }
     }

@@ -20,6 +20,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using URLRedirection;
+using Redirects;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGXbyKImport.Services
@@ -90,15 +91,29 @@ namespace ZAGXbyKImport.Services
 
         public void AddMediaRedirect(string oldUrl, string newUrl, string type)
         {
-            var provider = RedirectionTableInfo.Provider;
-            var redirect = new RedirectionTableInfo
+            ////class does not exist on Ameris
+            //var provider = RedirectionTableInfo.Provider;
+            //var redirect = new RedirectionTableInfo
+            //{
+            //    //RedirectionEnabled = true,
+            //    RedirectionOriginalURL = oldUrl,
+            //    RedirectionTargetURL = newUrl,
+            //    RedirectionType = type,
+            //    RedirectionSiteID = config.GetValue<int>("WebsiteChannelID"),
+            //    RedirectionMigrated = false
+            //};
+
+            //provider.BulkInsert([redirect]);
+
+            var provider = RedirectInfo.Provider;
+            var redirect = new RedirectInfo
             {
-                RedirectionEnabled = true,
-                RedirectionOriginalURL = oldUrl,
-                RedirectionTargetURL = newUrl,
-                RedirectionType = type,
-                RedirectionSiteID = config.GetValue<int>("WebsiteChannelID"),
-                RedirectionMigrated = false
+                RedirectEnabled = true,
+                RedirectOriginalUrl = oldUrl,
+                RedirectTargetUrl = newUrl,
+                RedirectType = type,
+                RedirectChannelId = config.GetValue<int>("WebsiteChannelID"),
+                //RedirectMigrated = false
             };
 
             provider.BulkInsert([redirect]);
@@ -110,8 +125,17 @@ namespace ZAGXbyKImport.Services
             var documentAssetFieldGuid = config.GetValue<string>("DocumentAssetFieldGUID");
             Dictionary<string, object> fields = new Dictionary<string, object>();
 
+            if(itemData == null)
+            {
+                return null;
+            }
+
             foreach (var item in itemData)
             {
+                if(item.Key == "Image")
+                {
+                    var halt = true;
+                }
                 switch (item.Value)
                 {
                     case Asset:
@@ -148,6 +172,9 @@ namespace ZAGXbyKImport.Services
                         if (skipReferences) { break; }
                         List<ContentItemReference> contentReferencelist = new List<ContentItemReference>();
                         var contentReference = item.Value as ContentReference;
+
+                        //Console.WriteLine($"Processing ContentReference for field '{item.Key}' with OldGuid: {contentReference?.OldGuid}");
+
                         var contentReferenceContentItem = xbyKImport.ContentItems.Where(c => c.OldGuid == contentReference.OldGuid).FirstOrDefault();
                         if (contentReferenceContentItem != null)
                         {
@@ -155,6 +182,12 @@ namespace ZAGXbyKImport.Services
                             {
                                 Identifier = contentReferenceContentItem.ContentItemGUID
                             });
+                            //Console.WriteLine($"  ✓ Found content item with GUID: {contentReferenceContentItem.ContentItemGUID}");
+                        }
+                        else
+                        {
+                            //Console.WriteLine($"  ✗ Content item NOT FOUND for OldGuid: {contentReference?.OldGuid}");
+                            //Console.WriteLine($"  Available content items: {xbyKImport.ContentItems.Count}");
                         }
                         fields.Add(item.Key, contentReferencelist);
                         break;

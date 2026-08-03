@@ -49,9 +49,18 @@ namespace ZAGXbyKImport.Services
             // e.g., to be shown as the creator in 'Created by' fields.
             // The user's permissions are not checked for any of the operations.
             UserInfo user = userInfoProvider.Get(config.GetValue<string>("ImportUsername"));
+            if (user == null)
+            {
+                throw new InvalidOperationException($"User '{config.GetValue<string>("ImportUsername")}' not found. Check your configuration and user database.");
+            }
 
             // Creates an instance of the manager class facilitating page operations
             this.webPageManager = webPageManagerFactory.Create(config.GetValue<int>("WebsiteChannelID"), user.UserID);
+            if (this.webPageManager == null)
+            {
+                throw new InvalidOperationException($"WebPageManager could not be created for channel ID '{config.GetValue<int>("WebsiteChannelID")}' and user ID '{user.UserID}'. Check your configuration and channel setup.");
+            }
+
             this.contentQueryExecutor = contentQueryExecutor;
             this.contentQueryResultMapper = contentQueryResultMapper;
             this.xbyKImport = xbyKImport;
@@ -102,24 +111,117 @@ namespace ZAGXbyKImport.Services
 
             if (page.Type == "Page")
             {
+                //Include only blog pages in import. Acknowledgement of other page types in export is required to traverse the site tree
+                if (page.ContentType != "Custom.WebPage_BlogPost" && page.ContentType != "Custom.WebPage_BlogLifeStage" && page.ContentType != "Custom.WebPage_Blog")
+                {
+                    return 0;
+                }
+
                 var itemData = new ContentItemData(commonFunctionsService.ConvertItemData(page.ItemData, true));
 
                 var contentItemParameters = new ContentItemParameters(page.ContentType, itemData);
-                var createPageParameters = new CreateWebPageParameters(page.DisplayName,
-                                                                       page.Language,
-                                                                       contentItemParameters);
 
+                var createPageParameters = new CreateWebPageParameters( page.DisplayName,
+                                                                        page.Language,
+                                                                        contentItemParameters);
+                if (createPageParameters.Name == null)
+                {
+                }
                 if (parentWebPageItemID != 0)
                 {
                     createPageParameters.ParentWebPageItemID = parentWebPageItemID;
                 }
+                //else if (page.TemplateConfiguration != null && page.TemplateConfiguration.identifier == "Package.Blog.WebPages.BlogLifeSTage")
+                //{//we might be able to import blog posts directly where they need to go
+                //    createPageParameters.ParentWebPageItemID = 1587;
+                //}
                 createPageParameters.UrlSlug = page.UrlSlug;
 
                 string templateConfiguration = page.TemplateConfiguration != null ? JsonSerializer.Serialize(page.TemplateConfiguration) : "";
 
                 createPageParameters.SetPageBuilderConfiguration("", templateConfiguration);
 
-                webPageItemID = await webPageManager.Create(createPageParameters);
+                if (createPageParameters == null) throw new InvalidOperationException("createPageParameters is null");
+                if (createPageParameters.ContentItemParameters == null) throw new InvalidOperationException("ContentItemParameters is null");
+                if (createPageParameters.ContentItemParameters.ContentItemData == null) throw new InvalidOperationException("ItemData is null");
+                if (string.IsNullOrEmpty(createPageParameters.DisplayName)) throw new InvalidOperationException("DisplayName is null or empty");
+                if (string.IsNullOrEmpty(createPageParameters.LanguageName)) throw new InvalidOperationException("Language is null or empty");
+
+
+                //Console.WriteLine($"createPageParameters: DisplayName={createPageParameters.DisplayName}, Language={createPageParameters}, ContentType={createPageParameters.ContentItemParameters?.ContentType}, ItemDataNull={createPageParameters.ContentItemParameters?.ItemData == null}");
+                ////output json information
+                //Console.WriteLine(JsonSerializer.Serialize(createPageParameters));
+                //Console.WriteLine(JsonSerializer.Serialize(createPageParameters.ContentItemParameters));
+                //Console.WriteLine(JsonSerializer.Serialize(createPageParameters.ContentItemParameters.ContentItemData));
+
+                //var rawItemData = commonFunctionsService.ConvertItemData(page.ItemData, true);
+                ////output itemdata json information, obscured in previous output
+                //Console.WriteLine("Raw ItemData: " + JsonSerializer.Serialize(page.ItemData));
+                //Console.WriteLine("Converted ItemData: " + JsonSerializer.Serialize(rawItemData));
+
+                // Do we have access to a channel info provider?
+                var channelInfo = ChannelInfo.Provider.Get().WhereEquals("ChannelID", config.GetValue<int>("WebsiteChannelID")).FirstOrDefault();
+                if (channelInfo == null)
+                {
+                    throw new InvalidOperationException("ChannelInfo not found for WebsiteChannelID.");
+                }
+                ////output channel info
+                //Console.WriteLine($"ChannelInfo: ID={channelInfo.ChannelID}, Name={channelInfo.ChannelName}, Type={channelInfo.ChannelType}, Size={channelInfo.ChannelSize}");
+
+                ////output connection string
+                //Console.WriteLine("CMSConnectionString: " + config.GetConnectionString("CMSConnectionString"));
+
+                //// generate minimal testing data
+                    //var minimalItemData = new Dictionary<string, object>
+                    //{
+                    //    { "WebPage_Content_Name", "Test Page" },
+                    //    { "WebPage_Alias", "test-page" }
+                    //};
+                    //var testitemData = new ContentItemData(minimalItemData);
+                    //var testcontentItemParameters = new ContentItemParameters("WebPage_BlogLifeStage", testitemData);
+                    //var testcreatePageParameters = new CreateWebPageParameters("test-page", "Test Page", "en", testcontentItemParameters);
+
+                    //try
+                    //{
+                    //    if(webPageManager == null)
+                    //    {
+                    //        Console.WriteLine("NULL webPageManager");
+                    //    }
+                    //    var testId = await webPageManager.Create(createPageParameters);
+                    //    Console.WriteLine("Page created with ID: " + testId);
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    Console.WriteLine( createPageParameters );
+                    //    Console.WriteLine("Exception: " + ex.Message);
+                    //    Console.WriteLine("StackTrace: " + ex.StackTrace);
+                    //    if (ex.InnerException != null)
+                    //        Console.WriteLine("Inner exception: " + ex.InnerException.Message);
+                    //    throw;
+                    //}
+                
+                if (page.ContentType == "Custom.WebPage_BlogLifeStage")
+                {
+                    Console.WriteLine("\n" + createPageParameters.Name);
+                }
+                if (page.ContentType == "Custom.WebPage_BlogPost")
+                {
+                    Console.WriteLine(createPageParameters.Name);
+                }
+
+                try
+                {
+                    webPageItemID = await webPageManager.Create(createPageParameters);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("\nException during page creation: " + ex.Message);
+                    Console.WriteLine("\nStackTrace: " + ex.StackTrace);
+                    if (ex.InnerException != null)
+                        Console.WriteLine("\nInner exception: " + ex.InnerException.Message);
+                    throw;
+                }
+
                 page.WebPageItemID = webPageItemID;
 
                 await webPageManager.TryPublish(webPageItemID, page.Language);
@@ -216,6 +318,7 @@ namespace ZAGXbyKImport.Services
                 _remainingPages = CountPages(xbyKImport.Pages);
                 Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
                 Console.Write($"\r   {_remainingPages--} pages remaining");
+                Console.Write('\r' + page.DisplayName);
                 if (page.Children != null && page.Children.Any())
                 {
                     await UpdatePageReferences(page.Children, page.WebPageItemID);
@@ -226,6 +329,12 @@ namespace ZAGXbyKImport.Services
         public async Task UpdatePageReference(Page page)
         {
             if (page.Type != "Page") { return; }
+            //if (page.ContentType == "Custom.Page_Section") { return; }
+            //if (page.ContentType == "Custom.Page_MegaMenuHeading") { return; }
+            //if (page.ContentType == "Custom.WebPage_Blog") { return; }
+            //if (page.ContentType == "Custom.WebPage_BlogLifeStage") { return; }
+
+            if (page.ContentType != "Custom.WebPage_BlogPost") { return; }
 
             ContentItemData updatedItemData = new ContentItemData(commonFunctionsService.ConvertItemData(page.ItemData, false));
             UpdateDraftData updateDraftData = new UpdateDraftData(updatedItemData);

@@ -28,16 +28,17 @@ namespace ZAGXbyKImport.Services
         }
         public async Task RunAsync()
         {
-            await contentItemService.DeleteContentItems();
+            Console.WriteLine("Import Service Start...");
 
-            await contentHubFolderService.DeleteContentHubFolders();
+            //await contentItemService.DeleteContentItems();
+            //await contentHubFolderService.DeleteContentHubFolders();
+            //await pageService.DeletePages();
 
-            await pageService.DeletePages();
 
             await contentHubFolderService.AddContentHubFolders();
 
             await contentItemService.AddContentItems();
- 
+
             await pageService.AddPages();
 
             await contentItemService.UpdateContentItemReferences();

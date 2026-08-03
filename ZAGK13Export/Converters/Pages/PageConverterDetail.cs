@@ -1,4 +1,5 @@
-﻿//using CMS.DocumentEngine;
+﻿//using CMS.DataEngine;
+//using CMS.DocumentEngine;
 //using CMS.DocumentEngine.Routing;
 //using Common;
 //using Microsoft.Extensions.Configuration;
@@ -12,15 +13,15 @@
 
 //namespace ZAGK13Export.Converters.Pages
 //{
-//    class PageConverterBio : IPageConverter
+//    class PageConverterDetail : IPageConverter
 //    {
-//        public string Type => "custom.PageBio";
-//        public string TargetType => "Custom.WebPage_Bio";
+//        public string Type => "custom.Detail";
+//        public string TargetType => "Custom.WebPage_Default";
 //        private readonly IConfiguration _config;
 //        private readonly FieldConverters _fieldConverters;
 //        private readonly CommonConverterService _commonConverterService;
 
-//        public PageConverterBio(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
+//        public PageConverterDetail(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
 //        {
 //            _config = config;
 //            _fieldConverters = fieldConverters;
@@ -29,19 +30,32 @@
 
 //        public Page Convert(TreeNode page)
 //        {
+//            string urlSlug = string.Empty;
+//            try
+//            {
+//                var culture = _config.GetValue<string>("Culture");
+//                var urlPathResult = page.GetPageUrlPath(_config.GetValue<string>("Culture"));
+//                urlSlug = urlPathResult?.Slug ?? string.Empty;
+//            }
+//            catch (InvalidOperationException ex)
+//            {
+//                // Log or handle the exception as needed
+//                urlSlug = string.Empty;
+//            }
+
 //            var newPage = new Page
 //            {
 //                OldGuid = page.NodeGUID,
 //                Type = "Page",
 //                DisplayName = page.DocumentName,
 //                ContentType = TargetType,
-//                WidgetConfiguration = _commonConverterService.ConvertPageWidgets(page, _config.GetValue<string>("ComponentContainerType"), "EditableArea_01"),
+//                WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
 //                TemplateConfiguration = new TemplateConfiguration
 //                {
-//                    identifier = "Custom.WebPage.Bio"
+//                    identifier = "Custom.WebPage.Detail"
 //                },
 //                Language = _config.GetValue<string>("TargetLanguage"),
-//                UrlSlug = page.GetPageUrlPath(_config.GetValue<string>("Culture")).Slug,
+//                UrlSlug = urlSlug,
 //                Order = page.NodeOrder,
 //                Published = page.IsPublished,
 //                FormerUrls = _commonConverterService.ConvertFormerUrls(page),
@@ -56,20 +70,18 @@
 //                    { "WebPage_Seo_MetaDescription", page.DocumentPageDescription },
 //                    { "WebPage_Seo_MetaKeywords", page.DocumentPageKeyWords },
 //                    { "WebPage_Seo_SchemaContent", page.GetValue("PageBaseSchemaContent", "") },
-//                    { "WebPage_Seo_CanonicalUrl", page.GetValue("PageBaseCanonicalUrl", "") },
 //                    { "WebPage_Og_Title", page.GetValue("PageBaseOpenGraphTitle", "") },
 //                    { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
 //                    { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
 //                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
-//                    { "Name", page.GetValue("BioName", page.DocumentName) },
-//                    { "Title", page.GetValue("BioTitle", "") },
-//                    { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("BioImage", "")) },
-//                    { "Phone", page.GetValue("BioPhone", "") },
-//                    { "EmailAddress", page.GetValue("BioEmailAddress", "") },
-//                    { "Ctas", _fieldConverters.ConvertCtas(page.GetValue("BioCtas", "")) },
-//                    { "Specialties", page.GetValue("BioSpecialties", "") },
-//                    { "Address", page.GetValue("BioAddress", "") },
-//                    { "Content", page.GetValue("BioContent", "") }
+//                    { "WebPage_MastheadTitle", page.GetValue("MastheadTitle", "") },
+//                    { "WebPage_MastheadText", page.GetValue("MastheadText", "") },
+//                    { "WebPage_MastheadCtas", _fieldConverters.ConvertCtas(page.GetValue("MastheadCtas", "")) },
+//                    { "WebPage_MastheadImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("MastheadImage", "")) },
+//                    { "WebPage_SidebarCtasTitle", page.GetValue("SidebarCtasTitle", "") },
+//                    { "WebPage_SubpageImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("SubpageImage", "")) },
+//                    { "WebPage_SubpageText", page.GetValue("SubpageText", "") },
+//                    { "WebPage_SubpageCtas", _fieldConverters.ConvertCtas(page.GetValue("SubpageCtas", "")) },
 //                }
 //            };
 

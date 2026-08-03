@@ -11,7 +11,6 @@ using ZAGXbyKImport.Services;
 
 // Ensures a preconfigured environment (DI, configuration providers) for .NET console apps
 var builder = Host.CreateApplicationBuilder(args);
-
 string json = File.ReadAllText(builder.Configuration.GetValue<string>("ImportFilePath"));
 
 XbyKImport import = JsonConvert.DeserializeObject<XbyKImport>(json, new JsonSerializerSettings
@@ -32,6 +31,8 @@ CMSApplication.PreInit(false);
 Service.MergeDescriptors(builder.Services);
 
 var app = builder.Build();
+
+Console.WriteLine("Program Start...");
 
 // Tells Xperience to use this app's service container for service resolution
 Service.SetProvider(app.Services);

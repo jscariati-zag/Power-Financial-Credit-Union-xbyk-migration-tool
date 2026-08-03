@@ -28,6 +28,13 @@ namespace ZAGK13Export.Services
         {
             IEnumerable<TreeNode> pages;
 
+            ////write out the page types we're getting
+            //foreach (var converter in _pageConverters)
+            //{
+            //    //Console.WriteLine($"Converter value: {converter.Value}");
+            //    Console.WriteLine($"\n Converter key: {converter.Key}");
+            //}
+
             if (parent == null)
             {
                 pages = new MultiDocumentQuery()

@@ -56,7 +56,9 @@ namespace ZAGK13Export.Services
                 return Task.FromResult(converter.Convert(contentItem));
             }
 
-            throw new ArgumentException($"No content item converter found for type: {type}");
+            //throw new ArgumentException($"No content item converter found for type: {type}");
+
+            return Task.FromResult<ContentItem>(null);
         }
 
         public void AddContentHubFolders()

@@ -165,7 +165,7 @@ namespace ZAGXbyKImport.Services
         public async Task AddContentItem(ContentItem contentItem)
         {
             int contentItemID;
-            var mediaPath = config.GetValue<string>("MediaPath");
+            //var mediaPath = config.GetValue<string>("MediaPath");
 
             CreateContentItemParameters createParams = new CreateContentItemParameters(
                                                                 contentItem.ContentType,
@@ -214,7 +214,7 @@ namespace ZAGXbyKImport.Services
         {
             ContentItemData updatedItemData  = new ContentItemData(commonFunctionsService.ConvertItemData(contentItem.ItemData, false, contentItem));
 
-            await contentItemManager.TryCreateDraft(contentItem.ContentItemID, contentItem.Language);
+            await contentItemManager.TryCreateDraft(contentItem.ContentItemID, contentItem.Language); //fails: The content item with ID 0 does not exists.'
             await contentItemManager.TryUpdateDraft(contentItem.ContentItemID,
                                         contentItem.Language,
                                         updatedItemData);

@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using ZAGK13Export.Converters;
-using ZAGK13Export.Converters.ContentItems;
+//using ZAGK13Export.Converters.ContentItems;
 using ZAGK13Export.Converters.Pages;
 using ZAGK13Export.Services;
 
@@ -75,6 +75,13 @@ foreach (var impl in widgetConverterImplementations)
 }
 
 var app = builder.Build();
+
+//// Log critical configuration values at startup
+//Console.WriteLine($"Loaded Culture: {builder.Configuration.GetValue<string>("Culture")}");
+//Console.WriteLine($"Loaded ExportFilePath: {builder.Configuration.GetValue<string>("ExportFilePath")}");
+//Console.WriteLine($"Loaded ApplicationRootPath: {builder.Configuration.GetValue<string>("ApplicationRootPath")}");
+//Console.WriteLine($"Loaded TargetLanguage: {builder.Configuration.GetValue<string>("TargetLanguage")}");
+//Console.WriteLine($"Loaded ComponentContainerType: {builder.Configuration.GetValue<string>("ComponentContainerType")}");
 
 CMS.Base.SystemContext.WebApplicationPhysicalPath = builder.Configuration.GetValue<string>("ApplicationRootPath");
 CMSApplication.Init();

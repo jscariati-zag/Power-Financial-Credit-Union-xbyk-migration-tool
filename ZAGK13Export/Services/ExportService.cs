@@ -1,4 +1,5 @@
 ﻿using CMS.DocumentEngine;
+using CMS.Membership;
 using Common;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ZAGK13Export.Services
@@ -44,30 +46,50 @@ namespace ZAGK13Export.Services
             _mediaService.ConvertMediaFiles();
             Console.WriteLine("COMPLETE");
 
-            Console.Write("Converting attachments...");
-            _attachmentsService.ConvertAttachments();
-            Console.WriteLine("COMPLETE");
+            //Console.Write("Converting attachments...");
+            //_attachmentsService.ConvertAttachments();
+            //Console.WriteLine("COMPLETE");
 
-            Console.Write("Adding content hub folders...");
-            _contentItemService.AddContentHubFolders();
-            Console.WriteLine("COMPLETE");
+            //Console.Write("Adding content hub folders...");
+            //_contentItemService.AddContentHubFolders();
+            //Console.WriteLine("COMPLETE");
 
             Console.Write("Converting content items...");
             _contentItemService.ConvertContentItems();
             Console.WriteLine("COMPLETE");
 
+
             Console.Write("Converting pages...");
-            _pageService.ConvertPages(_export.Pages, null);
+
+            //string siteName = "AmerisBank";
+            //string pageType = "Custom.BlogMain";
+            //string culture = "en-us";
+
+            //TreeProvider tree = new TreeProvider(MembershipContext.AuthenticatedUser);
+            //TreeNode node = DocumentHelper.GetDocuments()
+            //    .Type(pageType)
+            //    .OnSite(siteName)
+            //    .Culture(culture)
+            //    .TopN(1)
+            //    .FirstOrDefault();
+
+            TreeNode node = null;
+            _pageService.ConvertPages(_export.Pages, node);
             Console.WriteLine("COMPLETE");
 
-            Console.Write("Adding navigation...");
-            _navigationService.AddNavigation(_export.Pages);
-            Console.WriteLine("COMPLETE");
+            //Console.Write("Adding navigation...");
+            //_navigationService.AddNavigation(_export.Pages);
+            //Console.WriteLine("COMPLETE");
 
             string json = JsonConvert.SerializeObject(_export, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto
             });
+
+            ////Output json and location
+            Console.WriteLine(_config.GetValue<string>("ExportFilePath") + "\n");
+            //Console.WriteLine(json + "\n");
+
             File.WriteAllText(_config.GetValue<string>("ExportFilePath"), json);
 
             Console.WriteLine("Export written to file.");
