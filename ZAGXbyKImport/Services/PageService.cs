@@ -18,6 +18,8 @@ using Azure;
 using CMS.Core.Internal;
 using CMS.Core;
 using Microsoft.Data.SqlClient;
+using CMS.DataEngine;
+using System.Text.RegularExpressions;
 
 namespace ZAGXbyKImport.Services
 {
@@ -209,6 +211,39 @@ namespace ZAGXbyKImport.Services
                 catch (Exception ex)
                 {
                     Console.WriteLine("\nException during page creation: " + ex.Message);
+                    Console.WriteLine($"\nPage: DisplayName='{page.DisplayName}', ContentType='{page.ContentType}', UrlSlug='{page.UrlSlug}', ParentWebPageItemID={parentWebPageItemID}, Language='{page.Language}'");
+
+                    // The exception message often contains the numeric content type/class ID(s) and
+                    // parent web page item ID involved (e.g. "Content type with ID 5613 is not allowed
+                    // as a child of web page with ID 0."). Resolve those IDs to human-readable names
+                    // to make it easier to identify the offending item and its allowed-child configuration.
+                    foreach (Match idMatch in Regex.Matches(ex.Message, @"content type with id (?<id>\d+)", RegexOptions.IgnoreCase))
+                    {
+                        int classId = int.Parse(idMatch.Groups["id"].Value);
+                        string className = DataClassInfoProvider.GetDataClassInfo(classId)?.ClassName ?? "<unknown>";
+                        Console.WriteLine($"Content type ID {classId} resolves to class name '{className}'.");
+                    }
+
+                    var parentIdMatch = Regex.Match(ex.Message, @"web page with id (?<id>\d+)", RegexOptions.IgnoreCase);
+                    if (parentIdMatch.Success)
+                    {
+                        int parentId = int.Parse(parentIdMatch.Groups["id"].Value);
+                        if (parentId == 0)
+                        {
+                            Console.WriteLine("Web page with ID 0 refers to the website channel root (i.e. the page has no parent). Check the channel's allowed root content types.");
+                        }
+                        else
+                        {
+                            var parentWebPageItem = WebPageItemInfo.Provider.Get()
+                                .WhereEquals(nameof(WebPageItemInfo.WebPageItemID), parentId)
+                                .FirstOrDefault();
+                            string parentClassName = parentWebPageItem != null
+                                ? DataClassInfoProvider.GetDataClassInfo(ContentItemInfo.Provider.Get().FirstOrDefault(c => c.ContentItemID == parentWebPageItem.WebPageItemContentItemID)?.ContentItemContentTypeID ?? 0)?.ClassName ?? "<unknown>"
+                                : "<not found>";
+                            Console.WriteLine($"Parent web page item ID {parentId} has content type '{parentClassName}'.");
+                        }
+                    }
+
                     Console.WriteLine("\nStackTrace: " + ex.StackTrace);
                     if (ex.InnerException != null)
                         Console.WriteLine("\nInner exception: " + ex.InnerException.Message);
