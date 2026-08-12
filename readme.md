@@ -1,4 +1,4 @@
-# Ameris Bank Migration Tool
+# Power Financial Credit Union Migration Tool
 The original migration tool is intended to migrate the entire site. This project includes changes to accommodate only importing blog content into an existing XbyK site
 
 The export tool has two apps. Each of which function through the console without UI. One app handles export of the K13 site/content into a json file. The other app handles import of the json file into the XbyK site. Each is run in the IDE, by targeting the project and running with the green play button (with or without debug) as you would start a site. As each runs, the console should fill out nicely with detail as to what's going right or wrong. Given the separation in projects, there is a natural break in the process where the export stops, and you have a json file that you can look through and familiarize yourself with to troubleshoot as necessary.
@@ -57,8 +57,6 @@ Runs without adjustment
 
 
 ## Notes:
-Ameris's blog is unusual. It doesn't use month folders, but uses so-called Life Stage pages as blog categories to organize posts. This may not present an incredible obstacle, but it's worth noting.
-
 I did not successfully import blog post categories from the old site to the new site. If this is crucial for your project, you must pick up where I left off; I can take you no futher.
 
 Export/import can take a little while depending on how much content you're dealing with. In my case, I didn't particularly bother importing the main blog or life-stage (blog category) pages perfectly. There are only a handful, and it saved me time just to manually update those at the end rather than wrangle the migration tool. Similarly, I just imported things to the root of the site, or wherever, and manually repositioned things as needed.
