@@ -63,17 +63,31 @@ namespace ZAGK13Export.Services
             foreach (var page in GetPages(parent).Result)
             {
                 if (_config.GetSection("SkipPaths").Get<string[]>() == null || !_config.GetSection("SkipPaths").Get<string[]>().Any(s => page.NodeAliasPath.StartsWith(s))) {
-                    pages.Add(ConvertPage(page.ClassName, page).Result);
+                    var convertedPage = ConvertPage(page.ClassName, page).Result;
+
+                    if (convertedPage == null)
+                    {
+                        // Pass-through node (e.g. BlogYear): don't create a page for it, but still
+                        // process its children and attach them directly to the current parent level,
+                        // effectively flattening this node out of the exported tree.
+                        if (page.NodeHasChildren)
+                        {
+                            ConvertPages(pages, page);
+                        }
+                        continue;
+                    }
+
+                    pages.Add(convertedPage);
 
                     if (page.NodeHasChildren)
                     {
-                        ConvertPages(pages.Last().Children = new List<Page>(), page);
+                        ConvertPages(convertedPage.Children = new List<Page>(), page);
                     }
                 }
             }
         }
 
-        public Task<Page> ConvertPage(string type, TreeNode page)
+        public Task<Page?> ConvertPage(string type, TreeNode page)
         {
             if (_pageConverters.TryGetValue(type, out var converter))
             {

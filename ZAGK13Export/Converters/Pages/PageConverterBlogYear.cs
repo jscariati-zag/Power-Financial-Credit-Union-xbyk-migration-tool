@@ -29,75 +29,13 @@ namespace ZAGK13Export.Converters.Pages
             _commonConverterService = commonConverterService;
         }
 
-        public Page Convert(TreeNode page)
+        public Page? Convert(TreeNode page)
         {
-            string urlSlug = string.Empty;
-            try
-            {
-                var urlPathResult = page.GetPageUrlPath(_config.GetValue<string>("Culture"));
-                //var urlPathResult = page.GetPageUrlPath();
-                urlSlug = urlPathResult?.Slug ?? string.Empty;
-            }
-            catch (InvalidOperationException ex)
-            {
-                // Log or handle the exception as needed
-                //Console.WriteLine($"URL SLUG EMPTY: {ex} \n");
-                urlSlug = page.NodeAliasPath ?? string.Empty;
-            }
-
-            var newPage = new Page
-            {
-                OldGuid = page.NodeGUID,
-                Type = "Page",
-                DisplayName = page.DocumentName,
-                ContentType = TargetType,
-                WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
-                Language = _config.GetValue<string>("TargetLanguage"),
-                //UrlSlug = urlSlug,
-                Order = page.NodeOrder,
-                Published = page.IsPublished,
-                FormerUrls = _commonConverterService.ConvertFormerUrls(page),
-                ItemData = new Dictionary<string, object>
-                {
-                    { "WebPage_Content_Name", page.DocumentName },
-                    { "WebPage_Alias", page.NodeAlias },
-                    { "WebPage_Content_HideHeaderFDIC", page.GetBooleanValue("HideHeaderFDIC", false) },
-                    { "WebPage_Inclusions_Search", !page.DocumentSearchExcluded },
-                    { "WebPage_Inclusions_SitemapHtml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },
-                    { "WebPage_Inclusions_SitemapXml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },
-                    { "WebPage_Seo_MetaTitle", page.DocumentPageTitle },
-                    { "WebPage_Seo_MetaDescription", page.DocumentPageDescription },
-                    { "WebPage_Seo_MetaKeywords", page.DocumentPageKeyWords },
-                    { "WebPage_Seo_SchemaContent", page.GetValue("PageBaseSchemaContent", "") },
-                    { "WebPage_Og_Title", page.GetValue("PageBaseOpenGraphTitle", "") },
-                    { "WebPage_Og_Type", page.GetValue("PageBaseOpenGraphType", "") },
-                    { "WebPage_Og_Description", page.GetValue("PageBaseOpenGraphDescription", "") },
-                    { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("PageBaseOpenGraphImage", "")) },
-                    { "RichTextContent", page.GetValue("BlogContent", "") },
-                    { "Year", page.GetValue("Year", "") },
-                    { "Author", page.GetValue("Author", "") },
-                    //{ "Categories", page.GetValue("Category", "") }, //this will surely need adjustment
-                    { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("BlogImage", "")) },
-                    //related posts?
-
-                    //{ "WebPage_MastheadTitle", page.GetValue("MastheadTitle", "") },
-                    //{ "WebPage_MastheadText", page.GetValue("MastheadText", "") },
-                    //{ "WebPage_MastheadCtas", _fieldConverters.ConvertCtas(page.GetValue("MastheadCtas", "")) },
-                    //{ "WebPage_MastheadImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("MastheadImage", "")) },
-                    //{ "WebPage_SidebarCtasTitle", page.GetValue("SidebarCtasTitle", "") },
-                    //{ "WebPage_SubpageImage", _fieldConverters.ConvertMediaItemReference(page.GetValue("SubpageImage", "")) },
-                    //{ "WebPage_SubpageText", page.GetValue("SubpageText", "") },
-                    //{ "WebPage_SubpageCtas", _fieldConverters.ConvertCtas(page.GetValue("SubpageCtas", "")) },
-                }
-            };
-
-            DateTime tempDate;
-            if (DateTime.TryParse(page.GetValue("Date", ""), out tempDate))
-            {
-                newPage.ItemData.Add("Date", page.GetValue("Date", ""));
-            }
-
-            return newPage;
+            // The target site combines blog year/month into a single "Month Year" group page
+            // (see PageConverterBlogMonth), so BlogYear nodes are not created as pages themselves.
+            // Returning null flattens this node out of the exported tree; its children (BlogMonth
+            // nodes) are still processed and attached directly to this node's parent.
+            return null;
         }
     }
 }

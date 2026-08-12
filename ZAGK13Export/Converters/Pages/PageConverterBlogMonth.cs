@@ -45,11 +45,20 @@ namespace ZAGK13Export.Converters.Pages
                 urlSlug = page.NodeAliasPath ?? string.Empty;
             }
 
+            // The source site stores blog posts under a BlogYear > BlogMonth hierarchy, but the
+            // target site combines both levels into a single "Month Year" group page. BlogYear is
+            // exported as a pass-through node (see PageConverterBlogYear), so derive the year here
+            // from the node's alias path (e.g. "/Blog/2018/April" -> "2018") to build the combined name.
+            string[] pathSegments = (page.NodeAliasPath ?? string.Empty).Trim('/').Split('/');
+            string year = pathSegments.Length >= 2 ? pathSegments[^2] : string.Empty;
+            string combinedDisplayName = string.IsNullOrEmpty(year) ? page.DocumentName : $"{page.DocumentName} {year}";
+            string combinedAlias = string.IsNullOrEmpty(year) ? page.NodeAlias : $"{page.NodeAlias}-{year}";
+
             var newPage = new Page
             {
                 OldGuid = page.NodeGUID,
                 Type = "Page",
-                DisplayName = page.DocumentName,
+                DisplayName = combinedDisplayName,
                 ContentType = TargetType,
                 WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
                 Language = _config.GetValue<string>("TargetLanguage"),
@@ -59,8 +68,8 @@ namespace ZAGK13Export.Converters.Pages
                 FormerUrls = _commonConverterService.ConvertFormerUrls(page),
                 ItemData = new Dictionary<string, object>
                 {
-                    { "WebPage_Content_Name", page.DocumentName },
-                    { "WebPage_Alias", page.NodeAlias },
+                    { "WebPage_Content_Name", combinedDisplayName },
+                    { "WebPage_Alias", combinedAlias },
                     { "WebPage_Content_HideHeaderFDIC", page.GetBooleanValue("HideHeaderFDIC", false) },
                     { "WebPage_Inclusions_Search", !page.DocumentSearchExcluded },
                     { "WebPage_Inclusions_SitemapHtml", !page.GetBooleanValue("DocumentSitemapExcluded", false) },

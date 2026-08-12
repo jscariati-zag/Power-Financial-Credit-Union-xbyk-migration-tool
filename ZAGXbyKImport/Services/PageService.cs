@@ -114,8 +114,8 @@ namespace ZAGXbyKImport.Services
 
             if (page.Type == "Page")
             {
-                //Include only blog pages in import. Acknowledgement of other page types in export is required to traverse the site tree
-                if (page.ContentType != "Custom.WebPage_BlogPost" && page.ContentType != "Custom.WebPage_Blog")
+                //Include only blog pages (and their group container pages) in import. Acknowledgement of other page types in export is required to traverse the site tree
+                if (page.ContentType != "Custom.WebPage_BlogPost" && page.ContentType != "Custom.WebPage_Blog" && page.ContentType != "Custom.Page_Group")
                 {
                     return 0;
                 }
