@@ -29,13 +29,24 @@ namespace ZAGK13Export.Services
 
         public Task<IEnumerable<TreeNode>> GetContentItems()
         {
-            IEnumerable<TreeNode> pages = new MultiDocumentQuery()
-                                .OnSite(_config.GetValue<string>("SourceSite"))
-                                .Types(_contentItemConverters.Select(c => c.Key).ToArray())
-                                .Culture(_config.GetValue<string>("Culture"))
-                                .WithCoupledColumns();
+            // Querying all content types at once via MultiDocumentQuery generates a large UNION query
+            // across every coupled data table, which can easily exceed the SQL command timeout on
+            // large sites. Querying each content type separately keeps individual queries small and fast.
+            var pages = new List<TreeNode>();
 
-            return Task.FromResult(pages);
+            foreach (var type in _contentItemConverters.Select(c => c.Key))
+            {
+                var typeItems = new MultiDocumentQuery()
+                                    .OnSite(_config.GetValue<string>("SourceSite"))
+                                    .Types(type)
+                                    .Culture(_config.GetValue<string>("Culture"))
+                                    .WithCoupledColumns()
+                                    .ToList();
+
+                pages.AddRange(typeItems);
+            }
+
+            return Task.FromResult<IEnumerable<TreeNode>>(pages);
         }
 
         public void ConvertContentItems()
