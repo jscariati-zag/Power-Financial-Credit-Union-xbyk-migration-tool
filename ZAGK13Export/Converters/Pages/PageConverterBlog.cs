@@ -13,15 +13,15 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace ZAGK13Export.Converters.Pages
 {
-    class PageConverterBlogMain : IPageConverter
+    class PageConverterBlog : IPageConverter
     {
-        public string Type => "custom.BlogMain";
+        public string Type => "custom.Blog";
         public string TargetType => "Custom.WebPage_Blog";
         private readonly IConfiguration _config;
         private readonly FieldConverters _fieldConverters;
         private readonly CommonConverterService _commonConverterService;
 
-        public PageConverterBlogMain(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
+        public PageConverterBlog(IConfiguration config, FieldConverters fieldConverters, CommonConverterService commonConverterService)
         {
             _config = config;
             _fieldConverters = fieldConverters;
