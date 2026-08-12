@@ -354,46 +354,34 @@ namespace ZAGXbyKImport.Services
             }
         }
 
-        // Maps a source instance language code (e.g. "en-US") to a language code that actually
-        // exists in the target Xperience by Kentico instance, since content languages configured
-        // there may not match the source site's culture codes exactly.
+        // Resolves the language code name to use in the target Xperience by Kentico instance.
+        // The source site's language/culture code (e.g. "en-US") may not match any content
+        // language configured in the target instance, so the target language is instead driven
+        // by the "TargetLanguage" configuration setting.
         private string ResolveLanguageName(string sourceLanguage)
         {
-            if (string.IsNullOrEmpty(sourceLanguage))
-            {
-                throw new InvalidOperationException("Source language is null or empty.");
-            }
-
-            if (_languageNameCache.TryGetValue(sourceLanguage, out var cachedName))
+            if (_languageNameCache.TryGetValue(sourceLanguage ?? string.Empty, out var cachedName))
             {
                 return cachedName;
             }
 
-            var languages = ContentLanguageInfo.Provider.Get().ToList();
+            string targetLanguage = config.GetValue<string>("TargetLanguage");
 
-            var match = languages.FirstOrDefault(l => string.Equals(l.ContentLanguageName, sourceLanguage, StringComparison.OrdinalIgnoreCase));
+            if (string.IsNullOrEmpty(targetLanguage))
+            {
+                throw new InvalidOperationException("The \"TargetLanguage\" configuration setting is missing or empty. Set it to a language code name that exists in the target instance (e.g. \"en\").");
+            }
+
+            var match = ContentLanguageInfo.Provider.Get()
+                .FirstOrDefault(l => string.Equals(l.ContentLanguageName, targetLanguage, StringComparison.OrdinalIgnoreCase));
 
             if (match == null)
             {
-                // Try matching just the primary language subtag (e.g. "en" from "en-US")
-                string primaryTag = sourceLanguage.Split('-')[0];
-                match = languages.FirstOrDefault(l => string.Equals(l.ContentLanguageName, primaryTag, StringComparison.OrdinalIgnoreCase));
+                throw new InvalidOperationException($"The configured \"TargetLanguage\" ('{targetLanguage}') does not exist as a content language in the target instance.");
             }
 
-            var resolvedName = match?.ContentLanguageName ?? languages.FirstOrDefault()?.ContentLanguageName;
-
-            if (resolvedName == null)
-            {
-                throw new InvalidOperationException($"No content languages are configured in the target instance to map source language '{sourceLanguage}'.");
-            }
-
-            if (match == null)
-            {
-                Console.WriteLine($"Warning: Language '{sourceLanguage}' not found in target instance. Falling back to '{resolvedName}'.");
-            }
-
-            _languageNameCache[sourceLanguage] = resolvedName;
-            return resolvedName;
+            _languageNameCache[sourceLanguage ?? string.Empty] = match.ContentLanguageName;
+            return match.ContentLanguageName;
         }
     }
 }
