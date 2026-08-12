@@ -33,6 +33,7 @@ namespace ZAGXbyKImport.Services
         private readonly XbyKImport xbyKImport;
 
         private int _remainingPages;
+        private readonly Dictionary<string, string> _languageNameCache = new();
 
         public PageService(IConfiguration config,
                             CommonFunctionsService commonFunctionsService,
@@ -122,7 +123,7 @@ namespace ZAGXbyKImport.Services
                 var contentItemParameters = new ContentItemParameters(page.ContentType, itemData);
 
                 var createPageParameters = new CreateWebPageParameters( page.DisplayName,
-                                                                        page.Language,
+                                                                        ResolveLanguageName(page.Language),
                                                                         contentItemParameters);
                 if (createPageParameters.Name == null)
                 {
@@ -216,7 +217,7 @@ namespace ZAGXbyKImport.Services
 
                 page.WebPageItemID = webPageItemID;
 
-                await webPageManager.TryPublish(webPageItemID, page.Language);
+                await webPageManager.TryPublish(webPageItemID, ResolveLanguageName(page.Language));
 
                 var newWebPageItem = WebPageItemInfo.Provider.Get()
                                     .WhereEquals(nameof(WebPageItemInfo.WebPageItemID), webPageItemID)
@@ -227,7 +228,7 @@ namespace ZAGXbyKImport.Services
 
                 if (page.FormerUrls?.Any() ?? false)
                 {
-                    var contentLanguageID = ContentLanguageInfo.Provider.Get().FirstOrDefault(l => l.ContentLanguageName == page.Language).ContentLanguageID;
+                    var contentLanguageID = ContentLanguageInfo.Provider.Get().FirstOrDefault(l => l.ContentLanguageName == ResolveLanguageName(page.Language)).ContentLanguageID;
 
                     foreach(var formerUrl in page.FormerUrls)
                     {
@@ -249,7 +250,7 @@ namespace ZAGXbyKImport.Services
             } else if(page.Type == "Folder")
             {
                 var createFolderParameters = new CreateFolderParameters(page.DisplayName,
-                                                        page.Language);
+                                                        ResolveLanguageName(page.Language));
 
                 createFolderParameters.ParentWebPageItemID = parentWebPageItemID;
 
@@ -337,18 +338,62 @@ namespace ZAGXbyKImport.Services
                 updateDraftData.SetPageBuilderData(JsonSerializer.Serialize(widgetConfigurationObj), templateConfiguration);
             }
 
-            await webPageManager.TryCreateDraft(page.WebPageItemID, page.Language);
+            string resolvedLanguage = ResolveLanguageName(page.Language);
+
+            await webPageManager.TryCreateDraft(page.WebPageItemID, resolvedLanguage);
             await webPageManager.TryUpdateDraft(page.WebPageItemID,
-                                        page.Language,
+                                        resolvedLanguage,
                                         updateDraftData);
 
 
-            await webPageManager.TryPublish(page.WebPageItemID, page.Language);
+            await webPageManager.TryPublish(page.WebPageItemID, resolvedLanguage);
 
             if (!page.Published)
             {
-                await webPageManager.TryUnpublish(page.WebPageItemID, page.Language);
+                await webPageManager.TryUnpublish(page.WebPageItemID, resolvedLanguage);
             }
+        }
+
+        // Maps a source instance language code (e.g. "en-US") to a language code that actually
+        // exists in the target Xperience by Kentico instance, since content languages configured
+        // there may not match the source site's culture codes exactly.
+        private string ResolveLanguageName(string sourceLanguage)
+        {
+            if (string.IsNullOrEmpty(sourceLanguage))
+            {
+                throw new InvalidOperationException("Source language is null or empty.");
+            }
+
+            if (_languageNameCache.TryGetValue(sourceLanguage, out var cachedName))
+            {
+                return cachedName;
+            }
+
+            var languages = ContentLanguageInfo.Provider.Get().ToList();
+
+            var match = languages.FirstOrDefault(l => string.Equals(l.ContentLanguageName, sourceLanguage, StringComparison.OrdinalIgnoreCase));
+
+            if (match == null)
+            {
+                // Try matching just the primary language subtag (e.g. "en" from "en-US")
+                string primaryTag = sourceLanguage.Split('-')[0];
+                match = languages.FirstOrDefault(l => string.Equals(l.ContentLanguageName, primaryTag, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var resolvedName = match?.ContentLanguageName ?? languages.FirstOrDefault()?.ContentLanguageName;
+
+            if (resolvedName == null)
+            {
+                throw new InvalidOperationException($"No content languages are configured in the target instance to map source language '{sourceLanguage}'.");
+            }
+
+            if (match == null)
+            {
+                Console.WriteLine($"Warning: Language '{sourceLanguage}' not found in target instance. Falling back to '{resolvedName}'.");
+            }
+
+            _languageNameCache[sourceLanguage] = resolvedName;
+            return resolvedName;
         }
     }
 }
