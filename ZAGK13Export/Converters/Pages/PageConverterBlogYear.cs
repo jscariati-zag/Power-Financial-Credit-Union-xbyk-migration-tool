@@ -52,10 +52,6 @@ namespace ZAGK13Export.Converters.Pages
                 DisplayName = page.DocumentName,
                 ContentType = TargetType,
                 WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
-                TemplateConfiguration = new TemplateConfiguration
-                {
-                    identifier = "Package.Blog.WebPages.BlogYear"
-                },
                 Language = _config.GetValue<string>("TargetLanguage"),
                 //UrlSlug = urlSlug,
                 Order = page.NodeOrder,

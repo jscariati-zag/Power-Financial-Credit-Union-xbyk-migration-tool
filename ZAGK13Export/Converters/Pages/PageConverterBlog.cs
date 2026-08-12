@@ -52,7 +52,7 @@ namespace ZAGK13Export.Converters.Pages
                 WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
                 TemplateConfiguration = new TemplateConfiguration
                 {
-                    identifier = "Package.Blog.WebPages.Blog"
+                    identifier = "Custom.Web.Views.WebPages.Blog"
                 },
                 Language = _config.GetValue<string>("TargetLanguage"),
                 //UrlSlug = urlSlug,
