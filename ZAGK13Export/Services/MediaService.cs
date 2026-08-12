@@ -44,8 +44,8 @@ namespace ZAGK13Export.Services
 
             foreach (var library in libraries)
             {
-                //only bring over blog banner images
-                if(library.LibraryDisplayName == "Blog Banners")
+                //only bring over blog images
+                if(library.LibraryDisplayName == "Blog Images")
                 {
                     //Console.WriteLine($"\nLibrary " + library.LibraryDisplayName);
                     _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryName, "Media");
@@ -73,9 +73,9 @@ namespace ZAGK13Export.Services
             foreach (var mediaFileInfo in GetMediaFiles().Result)
             {
                 var libraryFolder = MediaLibraryInfo.Provider.Get(mediaFileInfo.FileLibraryID).LibraryFolder;
-                //only export blog banner images
+                //only export blog images
                 //Console.WriteLine($"\nMedia File " + MediaLibraryInfo.Provider.Get(mediaFileInfo.FileLibraryID).LibraryFolder);
-                if (libraryFolder == "Blog-Banners")
+                if (libraryFolder == "Blog-Images")
                 {
                     var contentItem = ConvertMediaFile(mediaFileInfo).Result;
                     if (contentItem != null)

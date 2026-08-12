@@ -112,7 +112,7 @@ namespace ZAGXbyKImport.Services
             if (page.Type == "Page")
             {
                 //Include only blog pages in import. Acknowledgement of other page types in export is required to traverse the site tree
-                if (page.ContentType != "Custom.WebPage_BlogPost" && page.ContentType != "Custom.WebPage_BlogLifeStage" && page.ContentType != "Custom.WebPage_Blog")
+                if (page.ContentType != "Custom.WebPage_BlogPost" && page.ContentType != "Custom.WebPage_Blog")
                 {
                     return 0;
                 }
@@ -131,10 +131,7 @@ namespace ZAGXbyKImport.Services
                 {
                     createPageParameters.ParentWebPageItemID = parentWebPageItemID;
                 }
-                //else if (page.TemplateConfiguration != null && page.TemplateConfiguration.identifier == "Package.Blog.WebPages.BlogLifeSTage")
-                //{//we might be able to import blog posts directly where they need to go
-                //    createPageParameters.ParentWebPageItemID = 1587;
-                //}
+                
                 createPageParameters.UrlSlug = page.UrlSlug;
 
                 string templateConfiguration = page.TemplateConfiguration != null ? JsonSerializer.Serialize(page.TemplateConfiguration) : "";
@@ -178,7 +175,6 @@ namespace ZAGXbyKImport.Services
                     //    { "WebPage_Alias", "test-page" }
                     //};
                     //var testitemData = new ContentItemData(minimalItemData);
-                    //var testcontentItemParameters = new ContentItemParameters("WebPage_BlogLifeStage", testitemData);
                     //var testcreatePageParameters = new CreateWebPageParameters("test-page", "Test Page", "en", testcontentItemParameters);
 
                     //try
@@ -200,10 +196,6 @@ namespace ZAGXbyKImport.Services
                     //    throw;
                     //}
                 
-                if (page.ContentType == "Custom.WebPage_BlogLifeStage")
-                {
-                    Console.WriteLine("\n" + createPageParameters.Name);
-                }
                 if (page.ContentType == "Custom.WebPage_BlogPost")
                 {
                     Console.WriteLine(createPageParameters.Name);
@@ -332,7 +324,6 @@ namespace ZAGXbyKImport.Services
             //if (page.ContentType == "Custom.Page_Section") { return; }
             //if (page.ContentType == "Custom.Page_MegaMenuHeading") { return; }
             //if (page.ContentType == "Custom.WebPage_Blog") { return; }
-            //if (page.ContentType == "Custom.WebPage_BlogLifeStage") { return; }
 
             if (page.ContentType != "Custom.WebPage_BlogPost") { return; }
 
