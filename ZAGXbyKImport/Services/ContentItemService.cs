@@ -182,7 +182,7 @@ namespace ZAGXbyKImport.Services
 
             contentItem.ContentItemID = contentItemID;
 
-            if (!contentItem.FolderName.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(contentItem.FolderName))
             {
                 await contentHubFolderService.AddItemToContentHubFolder(contentItem.ContentItemID, await contentHubFolderService.GetIDFromName(contentItem.FolderName));
             }

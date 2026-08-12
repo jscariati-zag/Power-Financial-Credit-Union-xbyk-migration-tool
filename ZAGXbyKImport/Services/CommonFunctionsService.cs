@@ -161,7 +161,7 @@ namespace ZAGXbyKImport.Services
                             ? imageAssetFieldGuid
                             : documentAssetFieldGuid;
 
-                            if (!contentItem.OldDirectUrl.IsNullOrEmpty())
+                            if (!string.IsNullOrEmpty(contentItem.OldDirectUrl))
                             {
                                 AddMediaRedirect(contentItem.OldDirectUrl, $"/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}", "302");
                             }
