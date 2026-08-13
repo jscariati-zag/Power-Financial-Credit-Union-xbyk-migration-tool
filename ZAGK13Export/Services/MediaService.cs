@@ -15,6 +15,13 @@ namespace ZAGK13Export.Services
 {
     class MediaService
     {
+        private static readonly HashSet<string> AllowedLibraryDisplayNames = new HashSet<string>
+        {
+            "Blog Images",
+            "Blog Images - Updated",
+            "Blog Images_June 2024"
+        };
+
         private readonly IConfiguration _config;
         private readonly XbyKImport _export;
         private readonly MediaConverter _mediaConverter;
@@ -45,7 +52,7 @@ namespace ZAGK13Export.Services
             foreach (var library in libraries)
             {
                 //only bring over blog images
-                if(library.LibraryDisplayName == "Blog Images")
+                if(AllowedLibraryDisplayNames.Contains(library.LibraryDisplayName))
                 {
                     //Console.WriteLine($"\nLibrary " + library.LibraryDisplayName);
                     _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryName, "Media");
@@ -72,10 +79,9 @@ namespace ZAGK13Export.Services
         {
             foreach (var mediaFileInfo in GetMediaFiles().Result)
             {
-                var libraryFolder = MediaLibraryInfo.Provider.Get(mediaFileInfo.FileLibraryID).LibraryFolder;
+                var libraryDisplayName = MediaLibraryInfo.Provider.Get(mediaFileInfo.FileLibraryID).LibraryDisplayName;
                 //only export blog images
-                //Console.WriteLine($"\nMedia File " + MediaLibraryInfo.Provider.Get(mediaFileInfo.FileLibraryID).LibraryFolder);
-                if (libraryFolder == "Blog-Images")
+                if (AllowedLibraryDisplayNames.Contains(libraryDisplayName))
                 {
                     var contentItem = ConvertMediaFile(mediaFileInfo).Result;
                     if (contentItem != null)
