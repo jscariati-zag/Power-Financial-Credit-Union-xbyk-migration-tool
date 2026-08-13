@@ -15,12 +15,25 @@ namespace ZAGK13Export.Services
 {
     class MediaService
     {
-        private static readonly HashSet<string> AllowedLibraryDisplayNames = new HashSet<string>
+        private const string BlogImagesLibraryDisplayName = "Images";
+
+        private static readonly HashSet<string> AllowedBlogImageFolderNames = new HashSet<string>
         {
             "Blog Images",
             "Blog Images - Updated",
             "Blog Images_June 2024"
         };
+
+        private static bool IsAllowedBlogImagePath(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return false;
+            }
+
+            string topLevelFolder = filePath.Split('/', '\\')[0];
+            return AllowedBlogImageFolderNames.Contains(topLevelFolder);
+        }
 
         private readonly IConfiguration _config;
         private readonly XbyKImport _export;
@@ -51,24 +64,36 @@ namespace ZAGK13Export.Services
 
             foreach (var library in libraries)
             {
-                //only bring over blog images
-                if(AllowedLibraryDisplayNames.Contains(library.LibraryDisplayName))
+                //only bring over the blog image subfolders from the Images library
+                if (library.LibraryDisplayName == BlogImagesLibraryDisplayName)
                 {
-                    //Console.WriteLine($"\nLibrary " + library.LibraryDisplayName);
                     _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryName, "Media");
 
-                    string[] allFolders = Directory.GetDirectories(rootPath + library.LibraryFolder, "*", SearchOption.AllDirectories);
+                    string libraryRootPath = rootPath + library.LibraryFolder;
 
-                    foreach (var folder in allFolders)
+                    foreach (var blogImageFolderName in AllowedBlogImageFolderNames)
                     {
-                        string relativePath = Path.GetRelativePath(rootPath, folder);
-                        string[] folderAr = relativePath.Split('\\');
-                        string displayName = folderAr.Last();
-                        string name = "Media_" + folderAr.Join("_");
-                        string parentName = "Media_" + folderAr.Take(folderAr.Length - 1).Join("_");
-                        if (displayName != "__thumbnails")
+                        string blogImageFolderPath = Path.Combine(libraryRootPath, blogImageFolderName);
+                        if (!Directory.Exists(blogImageFolderPath))
                         {
-                            _contentHubFolderService.AddContentHubFolder(displayName, name, parentName);
+                            continue;
+                        }
+
+                        string[] allFolders = new[] { blogImageFolderPath }
+                            .Concat(Directory.GetDirectories(blogImageFolderPath, "*", SearchOption.AllDirectories))
+                            .ToArray();
+
+                        foreach (var folder in allFolders)
+                        {
+                            string relativePath = Path.GetRelativePath(rootPath, folder);
+                            string[] folderAr = relativePath.Split('\\');
+                            string displayName = folderAr.Last();
+                            string name = "Media_" + folderAr.Join("_");
+                            string parentName = "Media_" + folderAr.Take(folderAr.Length - 1).Join("_");
+                            if (displayName != "__thumbnails")
+                            {
+                                _contentHubFolderService.AddContentHubFolder(displayName, name, parentName);
+                            }
                         }
                     }
                 }
@@ -80,8 +105,9 @@ namespace ZAGK13Export.Services
             foreach (var mediaFileInfo in GetMediaFiles().Result)
             {
                 var libraryDisplayName = MediaLibraryInfo.Provider.Get(mediaFileInfo.FileLibraryID).LibraryDisplayName;
-                //only export blog images
-                if (AllowedLibraryDisplayNames.Contains(libraryDisplayName))
+
+                //only export files under the blog image subfolders of the Images library
+                if (libraryDisplayName == BlogImagesLibraryDisplayName && IsAllowedBlogImagePath(mediaFileInfo.FilePath))
                 {
                     var contentItem = ConvertMediaFile(mediaFileInfo).Result;
                     if (contentItem != null)
