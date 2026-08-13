@@ -293,6 +293,64 @@ namespace ZAGK13Export.Services
             return widgetConfiguration;
         }
 
+        public Widget BuildRichTextWidget(string richTextContent)
+        {
+            var widgetGuid = Guid.NewGuid().ToString();
+            return new Widget
+            {
+                identifier = Guid.NewGuid().ToString(),
+                type = "Custom.Web.Components.Widgets.RichText",
+                variants = new List<Variant>
+                {
+                    new Variant
+                    {
+                        identifier = Guid.NewGuid().ToString(),
+                        properties = new Dictionary<string, object>
+                        {
+                            { "guid", widgetGuid },
+                            { "RichText", richTextContent }
+                        },
+                        fieldIdentifiers = new Dictionary<string, object>
+                        {
+                            { "guid", Guid.NewGuid().ToString() },
+                            { "RichText", Guid.NewGuid().ToString() }
+                        }
+                    }
+                }
+            };
+        }
+
+        public WidgetConfiguration? AddRichTextWidgetToConfiguration(WidgetConfiguration? widgetConfiguration, string editableAreaIdentifier, string richTextContent)
+        {
+            if (string.IsNullOrWhiteSpace(richTextContent))
+            {
+                return widgetConfiguration;
+            }
+
+            widgetConfiguration ??= new WidgetConfiguration
+            {
+                editableAreas = new List<EditableArea>()
+            };
+
+            var editableArea = widgetConfiguration.editableAreas.FirstOrDefault(a => a.identifier == editableAreaIdentifier);
+            if (editableArea == null)
+            {
+                editableArea = new EditableArea
+                {
+                    identifier = editableAreaIdentifier,
+                    sections = new List<Section>()
+                };
+                widgetConfiguration.editableAreas.Add(editableArea);
+            }
+
+            var section = _defaultSectionConverter.Convert(null);
+            section.zones[0].widgets.Add(BuildRichTextWidget(richTextContent));
+            editableArea.sections ??= new List<Section>();
+            editableArea.sections.Add(section);
+
+            return widgetConfiguration;
+        }
+
         public List<string> ConvertFormerUrls(TreeNode page)
         {
             List<string> formerUrls = new List<string>();

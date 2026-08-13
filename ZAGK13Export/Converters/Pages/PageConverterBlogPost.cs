@@ -101,6 +101,11 @@ namespace ZAGK13Export.Converters.Pages
                 newPage.ItemData.Add("Date", page.GetValue("Date", ""));
             }
 
+            newPage.WidgetConfiguration = _commonConverterService.AddRichTextWidgetToConfiguration(
+                newPage.WidgetConfiguration,
+                "EditableArea_01",
+                page.GetValue("ArticleContent", ""));
+
             return newPage;
         }
     }

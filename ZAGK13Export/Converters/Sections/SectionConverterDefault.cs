@@ -11,7 +11,7 @@ namespace ZAGK13Export.Converters.Widgets
     class SectionConverterDefault : ISectionConverter
     {
         public string Type => "";
-        public string TargetType => "Custom.Components.Sections.Default";
+        public string TargetType => "Custom.Web.Components.Sections.Default";
         public bool IsDefault => true;
         private readonly FieldConverters _fieldConverters;
 
