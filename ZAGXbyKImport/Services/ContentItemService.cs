@@ -28,6 +28,7 @@ namespace ZAGXbyKImport.Services
         private readonly IContentQueryResultMapper contentQueryResultMapper;
         private readonly ContentHubFolderService contentHubFolderService;
         private readonly XbyKImport xbyKImport;
+        private readonly Dictionary<string, string> _languageNameCache = new Dictionary<string, string>();
 
         public string[] ContentTypes;
 
@@ -59,6 +60,36 @@ namespace ZAGXbyKImport.Services
 
             DataClassInfoProvider dataClassInfoProvider = new DataClassInfoProvider();
             ContentTypes = dataClassInfoProvider.Get().Where(c => c.ClassContentTypeType == "Reusable").ToList().Select(c => c.ClassName).ToArray();
+        }
+
+        // Resolves the language code name to use in the target Xperience by Kentico instance.
+        // The source site's language/culture code (e.g. "en-US") may not match any content
+        // language configured in the target instance, so the target language is instead driven
+        // by the "TargetLanguage" configuration setting.
+        private string ResolveLanguageName(string sourceLanguage)
+        {
+            if (_languageNameCache.TryGetValue(sourceLanguage ?? string.Empty, out var cachedName))
+            {
+                return cachedName;
+            }
+
+            string targetLanguage = config.GetValue<string>("TargetLanguage");
+
+            if (string.IsNullOrEmpty(targetLanguage))
+            {
+                throw new InvalidOperationException("The \"TargetLanguage\" configuration setting is missing or empty. Set it to a language code name that exists in the target instance (e.g. \"en\").");
+            }
+
+            var match = ContentLanguageInfo.Provider.Get()
+                .FirstOrDefault(l => string.Equals(l.ContentLanguageName, targetLanguage, StringComparison.OrdinalIgnoreCase));
+
+            if (match == null)
+            {
+                throw new InvalidOperationException($"The configured \"TargetLanguage\" ('{targetLanguage}') does not exist as a content language in the target instance.");
+            }
+
+            _languageNameCache[sourceLanguage ?? string.Empty] = match.ContentLanguageName;
+            return match.ContentLanguageName;
         }
 
         public async Task<ContentItemDto> GetContentItem(int contentItemID)
@@ -167,18 +198,20 @@ namespace ZAGXbyKImport.Services
             int contentItemID;
             //var mediaPath = config.GetValue<string>("MediaPath");
 
+            string resolvedLanguage = ResolveLanguageName(contentItem.Language);
+
             CreateContentItemParameters createParams = new CreateContentItemParameters(
                                                                 contentItem.ContentType,
                                                                 null,
                                                                 contentItem.DisplayName,
-                                                                contentItem.Language,
+                                                                resolvedLanguage,
                                                                 config.GetValue<string>("WorkspaceName"));            
 
             ContentItemData itemData = new ContentItemData(commonFunctionsService.ConvertItemData(contentItem.ItemData, true, contentItem));
 
             // Creates the content item in the database
             contentItemID = await contentItemManager.Create(createParams, itemData);
-            await contentItemManager.TryPublish(contentItemID, contentItem.Language);
+            await contentItemManager.TryPublish(contentItemID, resolvedLanguage);
 
             contentItem.ContentItemID = contentItemID;
 
@@ -214,16 +247,18 @@ namespace ZAGXbyKImport.Services
         {
             ContentItemData updatedItemData  = new ContentItemData(commonFunctionsService.ConvertItemData(contentItem.ItemData, false, contentItem));
 
-            await contentItemManager.TryCreateDraft(contentItem.ContentItemID, contentItem.Language); //fails: The content item with ID 0 does not exists.'
+            string resolvedLanguage = ResolveLanguageName(contentItem.Language);
+
+            await contentItemManager.TryCreateDraft(contentItem.ContentItemID, resolvedLanguage); //fails: The content item with ID 0 does not exists.'
             await contentItemManager.TryUpdateDraft(contentItem.ContentItemID,
-                                        contentItem.Language,
+                                        resolvedLanguage,
                                         updatedItemData);
 
-            await contentItemManager.TryPublish(contentItem.ContentItemID, contentItem.Language);
+            await contentItemManager.TryPublish(contentItem.ContentItemID, resolvedLanguage);
 
             if (!contentItem.Published)
             {
-                await contentItemManager.TryUnpublish(contentItem.ContentItemID, contentItem.Language);
+                await contentItemManager.TryUnpublish(contentItem.ContentItemID, resolvedLanguage);
             }
         }
     }
