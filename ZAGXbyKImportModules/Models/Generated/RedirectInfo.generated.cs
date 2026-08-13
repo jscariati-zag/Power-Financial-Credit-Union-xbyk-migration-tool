@@ -98,6 +98,28 @@ namespace Redirects
 
 
         /// <summary>
+        /// Redirect match path.
+        /// </summary>
+        [DatabaseField]
+        public virtual string RedirectMatchPath
+        {
+            get => ValidationHelper.GetString(GetValue(nameof(RedirectMatchPath)), String.Empty);
+            set => SetValue(nameof(RedirectMatchPath), value);
+        }
+
+
+        /// <summary>
+        /// Redirect result path.
+        /// </summary>
+        [DatabaseField]
+        public virtual string RedirectResultPath
+        {
+            get => ValidationHelper.GetString(GetValue(nameof(RedirectResultPath)), String.Empty);
+            set => SetValue(nameof(RedirectResultPath), value);
+        }
+
+
+        /// <summary>
         /// Deletes the object using appropriate provider.
         /// </summary>
         protected override void DeleteObject()

@@ -113,6 +113,8 @@ namespace ZAGXbyKImport.Services
                 RedirectTargetUrl = newUrl,
                 RedirectType = type,
                 RedirectChannelId = config.GetValue<int>("WebsiteChannelID"),
+                RedirectMatchPath = oldUrl,
+                RedirectResultPath = newUrl,
                 //RedirectMigrated = false
             };
 
