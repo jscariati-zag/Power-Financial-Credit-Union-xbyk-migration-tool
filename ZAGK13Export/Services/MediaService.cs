@@ -23,6 +23,7 @@ namespace ZAGK13Export.Services
             "Blog Images - Updated",
             "Blog Images_June 2024",
             "Banners",
+            "Greenlight",
             "Media",
             "Promo Images"
         };
@@ -34,7 +35,15 @@ namespace ZAGK13Export.Services
                 return false;
             }
 
-            string topLevelFolder = filePath.Split('/', '\\')[0];
+            string[] segments = filePath.Split('/', '\\');
+
+            // A file with no folder segments (i.e. only a filename) sits directly in the library root.
+            if (segments.Length == 1)
+            {
+                return true;
+            }
+
+            string topLevelFolder = segments[0];
             return AllowedBlogImageFolderNames.Contains(topLevelFolder);
         }
 
