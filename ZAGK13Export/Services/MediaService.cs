@@ -21,7 +21,8 @@ namespace ZAGK13Export.Services
         {
             "Blog Images",
             "Blog Images - Updated",
-            "Blog Images_June 2024"
+            "Blog Images_June 2024",
+            "Promo Images"
         };
 
         private static bool IsAllowedBlogImagePath(string filePath)
@@ -60,7 +61,7 @@ namespace ZAGK13Export.Services
             var rootPath = _config.GetValue<string>("MediaPath");
             var libraries = MediaLibraryInfo.Provider.Get().AsEnumerable<MediaLibraryInfo>();
 
-            _contentHubFolderService.AddContentHubFolder("Media", "Media", "root");
+            _contentHubFolderService.AddContentHubFolder("Imported Media", "Media", "root");
 
             foreach (var library in libraries)
             {
