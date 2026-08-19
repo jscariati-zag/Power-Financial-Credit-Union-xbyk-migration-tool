@@ -175,6 +175,8 @@ namespace ZAGXbyKImport.Services
                         List<ContentItemReference> contentReferencelist = new List<ContentItemReference>();
                         var contentReference = item.Value as ContentReference;
 
+                        //Console.WriteLine($"Processing ContentReference for field '{item.Key}' with OldGuid: {contentReference?.OldGuid}");
+
                         var contentReferenceContentItem = xbyKImport.ContentItems.Where(c => c.OldGuid == contentReference.OldGuid).FirstOrDefault();
                         if (contentReferenceContentItem != null)
                         {
@@ -182,13 +184,12 @@ namespace ZAGXbyKImport.Services
                             {
                                 Identifier = contentReferenceContentItem.ContentItemGUID
                             });
+                            //Console.WriteLine($"  ✓ Found content item with GUID: {contentReferenceContentItem.ContentItemGUID}");
                         }
                         else
                         {
-                            string ownerDescription = contentItem != null
-                                ? $"content item '{contentItem.DisplayName}' (OldGuid: {contentItem.OldGuid})"
-                                : "the current item";
-                            Console.WriteLine($"WARNING: Could not resolve reference for field '{item.Key}' on {ownerDescription}. No exported content item found with OldGuid: {contentReference?.OldGuid}.");
+                            //Console.WriteLine($"  ✗ Content item NOT FOUND for OldGuid: {contentReference?.OldGuid}");
+                            //Console.WriteLine($"  Available content items: {xbyKImport.ContentItems.Count}");
                         }
                         fields.Add(item.Key, contentReferencelist);
                         break;
