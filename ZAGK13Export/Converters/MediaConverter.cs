@@ -25,7 +25,7 @@ namespace ZAGK13Export.Converters
             }
             ContentItem? newContentItem = new ContentItem();
 
-            if (_config.GetValue<string>("ImageExtensions").Split(';').Contains(mediaFile.FileExtension.TrimStart('.')))
+            if (_config.GetValue<string>("ImageExtensions").Split(';').Contains(mediaFile.FileExtension.TrimStart('.'), StringComparer.OrdinalIgnoreCase))
             {
                 newContentItem.OldGuid = mediaFile.FileGUID;
                 newContentItem.OldDirectUrl = "/" + _config.GetValue<string>("SourceSite") + "/media/" + mediaLibraryInfo.LibraryFolder + "/" + mediaFile.FilePath;
