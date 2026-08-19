@@ -58,7 +58,6 @@ namespace ZAGK13Export.Services
 
         public void ConvertMediaLibraryFolders()
         {
-            var rootPath = _config.GetValue<string>("MediaPath");
             var libraries = MediaLibraryInfo.Provider.Get().AsEnumerable<MediaLibraryInfo>();
 
             _contentHubFolderService.AddContentHubFolder("Imported Media", "Media", "root");
@@ -70,31 +69,39 @@ namespace ZAGK13Export.Services
                 {
                     _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryFolder, "Media");
 
-                    string libraryRootPath = rootPath + library.LibraryFolder;
+                    // Derive the folder hierarchy from the database FilePath of the files actually
+                    // being exported (the same source of truth MediaConverter uses to build FolderName),
+                    // rather than scanning the filesystem. This guarantees every folder referenced by an
+                    // exported content item's FolderName is created, even if the physical directory is
+                    // missing/renamed/moved on the machine running the export.
+                    var mediaFiles = MediaFileInfo.Provider.Get()
+                        .WhereEquals(nameof(MediaFileInfo.FileLibraryID), library.LibraryID)
+                        .AsEnumerable();
 
-                    foreach (var blogImageFolderName in AllowedBlogImageFolderNames)
+                    foreach (var mediaFileInfo in mediaFiles)
                     {
-                        string blogImageFolderPath = Path.Combine(libraryRootPath, blogImageFolderName);
-                        if (!Directory.Exists(blogImageFolderPath))
+                        if (!IsAllowedBlogImagePath(mediaFileInfo.FilePath))
                         {
                             continue;
                         }
 
-                        string[] allFolders = new[] { blogImageFolderPath }
-                            .Concat(Directory.GetDirectories(blogImageFolderPath, "*", SearchOption.AllDirectories))
-                            .ToArray();
+                        string[] folderAr = mediaFileInfo.FilePath.Split('/');
 
-                        foreach (var folder in allFolders)
+                        // The last segment is the file name itself; everything before it is the folder path.
+                        for (int depth = 1; depth < folderAr.Length; depth++)
                         {
-                            string relativePath = Path.GetRelativePath(rootPath, folder);
-                            string[] folderAr = relativePath.Split('\\');
-                            string displayName = folderAr.Last();
-                            string name = "Media_" + folderAr.Join("_");
-                            string parentName = "Media_" + folderAr.Take(folderAr.Length - 1).Join("_");
-                            if (displayName != "__thumbnails")
+                            string displayName = folderAr[depth - 1];
+                            if (displayName == "__thumbnails")
                             {
-                                _contentHubFolderService.AddContentHubFolder(displayName, name, parentName);
+                                continue;
                             }
+
+                            string name = "Media_" + library.LibraryFolder + "_" + folderAr.Take(depth).Join("_");
+                            string parentName = depth == 1
+                                ? "Media_" + library.LibraryFolder
+                                : "Media_" + library.LibraryFolder + "_" + folderAr.Take(depth - 1).Join("_");
+
+                            _contentHubFolderService.AddContentHubFolder(displayName, name, parentName);
                         }
                     }
                 }
