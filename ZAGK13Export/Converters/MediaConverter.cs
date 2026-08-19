@@ -2,6 +2,7 @@
 using CMS.MediaLibrary;
 using Common;
 using Microsoft.Extensions.Configuration;
+using System.Text.RegularExpressions;
 
 namespace ZAGK13Export.Converters
 {
@@ -12,6 +13,16 @@ namespace ZAGK13Export.Converters
         public MediaConverter(IConfiguration config)
         {
             _config = config;
+        }
+
+        private string BuildAbsoluteAssetUrl(string permanentUrl)
+        {
+            if (Uri.TryCreate(permanentUrl, UriKind.Absolute, out _))
+            {
+                return permanentUrl;
+            }
+
+            return _config.GetValue<string>("BaseUrl") + Regex.Replace(permanentUrl, "^~", "");
         }
 
         public ContentItem? Convert(MediaFileInfo mediaFile)
@@ -39,7 +50,7 @@ namespace ZAGK13Export.Converters
                 {
                     { "Description", mediaFile.FileDescription.Length > 200 ? mediaFile.FileDescription.Substring(0, 200) : mediaFile.FileDescription },
                     { "Asset_Image", new Asset{
-                        AssetUrl = MediaLibraryHelper.GetPermanentUrl(mediaFile),
+                        AssetUrl = BuildAbsoluteAssetUrl(MediaLibraryHelper.GetPermanentUrl(mediaFile)),
                         FileGuid = mediaFile.FileGUID
                     } }
                 };
@@ -57,7 +68,7 @@ namespace ZAGK13Export.Converters
                 {
                     { "Description", mediaFile.FileDescription.Length > 200 ? mediaFile.FileDescription.Substring(0, 200) : mediaFile.FileDescription },
                     { "Asset_Document", new Asset{
-                        AssetUrl = MediaLibraryHelper.GetPermanentUrl(mediaFile),
+                        AssetUrl = BuildAbsoluteAssetUrl(MediaLibraryHelper.GetPermanentUrl(mediaFile)),
                         FileGuid = mediaFile.FileGUID
                     } }
                 };
