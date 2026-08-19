@@ -68,7 +68,7 @@ namespace ZAGK13Export.Services
                 //only bring over the blog image subfolders from the Images library
                 if (library.LibraryDisplayName == BlogImagesLibraryDisplayName)
                 {
-                    _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryName, "Media");
+                    _contentHubFolderService.AddContentHubFolder(library.LibraryDisplayName, "Media_" + library.LibraryFolder, "Media");
 
                     string libraryRootPath = rootPath + library.LibraryFolder;
 

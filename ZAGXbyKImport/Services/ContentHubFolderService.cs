@@ -108,6 +108,10 @@ namespace ZAGXbyKImport.Services
                 var altName = name.Replace("-", "");
                 folder = xbyKImport.ContentHubFolders.Where(f => f.Name == altName).FirstOrDefault();
             }
+            if (folder == null)
+            {
+                throw new InvalidOperationException($"No content hub folder with name '{name}' was found in the exported data. Check that the export and import folder-naming logic match.");
+            }
             return folder.ContentFolderID;
         }
     }
