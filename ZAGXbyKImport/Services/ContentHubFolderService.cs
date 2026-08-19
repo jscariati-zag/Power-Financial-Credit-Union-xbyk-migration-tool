@@ -78,6 +78,18 @@ namespace ZAGXbyKImport.Services
                 parentFolder = await contentFolderManager.Get(await GetIDFromName(contentHubFolder.ParentName));
             }
 
+            var existingFolder = contentFolderManager.Get()
+                .AsEnumerable()
+                .Where(f => f.ContentFolderParentFolderID == parentFolder.ContentFolderID
+                            && f.ContentFolderDisplayName == contentHubFolder.DisplayName)
+                .FirstOrDefault();
+
+            if (existingFolder != null)
+            {
+                contentHubFolder.ContentFolderID = existingFolder.ContentFolderID;
+                return;
+            }
+
             CreateContentFolderParameters createFolderParams = new CreateContentFolderParameters(displayName: contentHubFolder.DisplayName);
 
             contentHubFolder.ContentFolderID = await contentFolderManager.Create(parentFolder.ContentFolderID, createFolderParams);
