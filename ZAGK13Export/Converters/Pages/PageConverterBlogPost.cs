@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZAGK13Export.Services;
 using static Org.BouncyCastle.Math.EC.ECCurve;
@@ -76,7 +77,6 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Og_Type", page.GetValue("OpenGraphType", "") },
                     { "WebPage_Og_Description", page.GetValue("OpenGraphDescription", "") },
                     { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("OpenGraphImage", "")) },
-                    { "RichTextContent", page.GetValue("BlogContent", "") },
                     //{ "Date", page.GetValue("Date", "") },
                     { "Author", page.GetValue("Author", "") },
                     //{ "Categories", page.GetValue("Category", "") }, //this will surely need adjustment
@@ -100,12 +100,48 @@ namespace ZAGK13Export.Converters.Pages
                 newPage.ItemData.Add("Date", page.GetValue("Date", ""));
             }
 
+            string articleContent = page.GetValue("ArticleContent", "");
+            int? readingTime = ExtractReadingTime(ref articleContent);
+            if (readingTime.HasValue)
+            {
+                newPage.ItemData.Add("ReadingTime", readingTime.Value);
+            }
+
             newPage.WidgetConfiguration = _commonConverterService.AddRichTextWidgetToConfiguration(
                 newPage.WidgetConfiguration,
                 "EditableArea_01",
-                page.GetValue("ArticleContent", ""));
+                articleContent);
 
             return newPage;
+        }
+
+        // Detects a leading reading time estimate (e.g. "5 MIN. READ", "5 min read") at the
+        // start of the article content, extracts it as an integer, and removes the text
+        // (including any surrounding markup/whitespace) from the content.
+        private static readonly Regex ReadingTimeRegex = new Regex(
+            @"^\s*(?:<[^>]+>\s*)*(\d+)\s*MIN(?:UTE)?S?\.?\s*READ\s*(?:</[^>]+>\s*)*",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static int? ExtractReadingTime(ref string articleContent)
+        {
+            if (string.IsNullOrEmpty(articleContent))
+            {
+                return null;
+            }
+
+            var match = ReadingTimeRegex.Match(articleContent);
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            if (!int.TryParse(match.Groups[1].Value, out int minutes))
+            {
+                return null;
+            }
+
+            articleContent = articleContent.Substring(match.Length);
+            return minutes;
         }
     }
 }
