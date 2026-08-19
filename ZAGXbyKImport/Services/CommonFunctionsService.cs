@@ -165,7 +165,7 @@ namespace ZAGXbyKImport.Services
 
                             if (!string.IsNullOrEmpty(contentItem.OldDirectUrl))
                             {
-                                AddMediaRedirect(contentItem.OldDirectUrl, $"/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}", "302");
+                                AddMediaRedirect(contentItem.OldDirectUrl, $"/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={config.GetValue<string>("TargetLanguage")}", "302");
                             }
                         }
 
@@ -333,7 +333,7 @@ namespace ZAGXbyKImport.Services
                         ? imageAssetFieldGuid
                         : documentAssetFieldGuid;
 
-                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}";
+                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={config.GetValue<string>("TargetLanguage")}";
                 }
 
                 return match.Value; // fallback to original if not found
@@ -354,7 +354,7 @@ namespace ZAGXbyKImport.Services
                         ? imageAssetFieldGuid
                         : documentAssetFieldGuid;
 
-                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}";
+                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={config.GetValue<string>("TargetLanguage")}";
                 }
 
                 return match.Value; // fallback to original if not found
@@ -379,7 +379,7 @@ namespace ZAGXbyKImport.Services
                         ? imageAssetFieldGuid
                         : documentAssetFieldGuid;
 
-                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={contentItem.Language}";
+                    return $"~/getContentAsset/{contentItem.ContentItemGUID}/{assetFieldGuid}/{filename}?language={config.GetValue<string>("TargetLanguage")}";
                 }
 
                 return match.Value; // fallback to original if not found
