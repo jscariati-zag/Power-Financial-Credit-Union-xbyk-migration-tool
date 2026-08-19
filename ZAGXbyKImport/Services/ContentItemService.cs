@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using URLRedirection;
+using Redirects;
 
 namespace ZAGXbyKImport.Services
 {
@@ -164,9 +164,9 @@ namespace ZAGXbyKImport.Services
                 Console.Write($"\r   {totalItems--} items remaining");
             }
 
-            // delete any redirects not created by Kentico's migration toolkit
-            var where = new WhereCondition().WhereNotEquals("RedirectionMigrated", 1);
-            RedirectionTableInfo.Provider.BulkDelete(where);
+            // delete any redirects created by a previous run of this import tool for this channel
+            var where = new WhereCondition().WhereEquals("RedirectChannelId", config.GetValue<int>("WebsiteChannelID"));
+            RedirectInfo.Provider.BulkDelete(where);
             Console.Write('\r' + new string(' ', Console.WindowWidth - 1));
             Console.WriteLine($"\r   COMPLETE");
         }
