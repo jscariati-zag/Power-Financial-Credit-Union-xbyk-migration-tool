@@ -35,11 +35,72 @@ namespace ZAGK13Export.Converters
             {
                 mediaGuid = Guid.Parse(match.Value);
             }
+            else
+            {
+                // Some fields (e.g. BannerImage) reference media files via a direct file path URL
+                // instead of a GUID-based getmedia URL, e.g.
+                // "/PowerFI/media/Images/Promo Images/Full Width Image Promos/Business-merchant-services.jpg?ext=.jpg"
+                // In that case, resolve the file by matching its library folder + relative path
+                // against the media library file records.
+                var resolvedGuid = ResolveMediaFileGuidFromDirectUrl(mediaUrl);
+                if (resolvedGuid.HasValue)
+                {
+                    mediaGuid = resolvedGuid.Value;
+                }
+            }
 
             return new ContentReference
             {
                 OldGuid = mediaGuid
             };
+        }
+
+        private static Guid? ResolveMediaFileGuidFromDirectUrl(string mediaUrl)
+        {
+            if (string.IsNullOrEmpty(mediaUrl))
+            {
+                return null;
+            }
+
+            // Strip any query string (e.g. "?ext=.jpg") and decode URL-encoded characters
+            // (e.g. "%20" -> " ").
+            string path = mediaUrl.Split('?')[0];
+            path = Uri.UnescapeDataString(path);
+
+            string[] segments = path.Trim('/').Split('/');
+
+            int mediaIndex = Array.FindIndex(segments, s => string.Equals(s, "media", StringComparison.OrdinalIgnoreCase));
+            if (mediaIndex < 0 || mediaIndex + 1 >= segments.Length)
+            {
+                return null;
+            }
+
+            // Segment immediately after "media" is the library folder; everything after that is
+            // the file's relative path within the library.
+            string libraryFolder = segments[mediaIndex + 1];
+            string[] relativeSegments = segments.Skip(mediaIndex + 2).ToArray();
+            if (relativeSegments.Length == 0)
+            {
+                return null;
+            }
+
+            string relativePath = string.Join("/", relativeSegments);
+
+            var mediaLibrary = MediaLibraryInfo.Provider.Get()
+                .WhereEquals(nameof(MediaLibraryInfo.LibraryFolder), libraryFolder)
+                .FirstOrDefault();
+
+            if (mediaLibrary == null)
+            {
+                return null;
+            }
+
+            var mediaFile = MediaFileInfo.Provider.Get()
+                .WhereEquals(nameof(MediaFileInfo.FileLibraryID), mediaLibrary.LibraryID)
+                .WhereEquals(nameof(MediaFileInfo.FilePath), relativePath)
+                .FirstOrDefault();
+
+            return mediaFile?.FileGUID;
         }
 
         public string ConvertCtas(string ctas)
