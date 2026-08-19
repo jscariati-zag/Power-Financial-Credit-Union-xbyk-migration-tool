@@ -54,6 +54,16 @@ namespace ZAGK13Export.Converters.Pages
             string combinedDisplayName = string.IsNullOrEmpty(year) ? page.DocumentName : $"{page.DocumentName} {year}";
             string combinedAlias = string.IsNullOrEmpty(year) ? page.NodeAlias : $"{page.NodeAlias}-{year}";
 
+            // Order the combined "Month Year" group pages newest-to-oldest as siblings under Blog.
+            // Lower Order values end up first/topmost after import (see PageService.AddPages), so
+            // compute a value that decreases as the month/year gets more recent.
+            int order = int.MaxValue;
+            if (int.TryParse(year, out int yearNumber) &&
+                DateTime.TryParseExact(page.DocumentName, "MMMM", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime monthDate))
+            {
+                order = int.MaxValue - (yearNumber * 12 + monthDate.Month);
+            }
+
             var newPage = new Page
             {
                 OldGuid = page.NodeGUID,
@@ -63,7 +73,7 @@ namespace ZAGK13Export.Converters.Pages
                 WidgetConfiguration = _commonConverterService.ConvertPageWidgetsAlt(page, _config.GetValue<string>("ComponentContainerType")),
                 Language = _config.GetValue<string>("TargetLanguage"),
                 //UrlSlug = urlSlug,
-                Order = page.NodeOrder,
+                Order = order,
                 Published = page.IsPublished,
                 FormerUrls = _commonConverterService.ConvertFormerUrls(page),
                 ItemData = new Dictionary<string, object>
