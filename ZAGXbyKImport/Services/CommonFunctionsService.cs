@@ -147,7 +147,7 @@ namespace ZAGXbyKImport.Services
                         var filename = Path.GetFileName(new Uri(asset.AssetUrl).AbsolutePath);
                         var assetMetadata = new ContentItemAssetMetadata()
                         {
-                            Extension = Path.GetExtension(new Uri(asset.AssetUrl).AbsolutePath),
+                            Extension = Path.GetExtension(new Uri(asset.AssetUrl).AbsolutePath).ToLowerInvariant(),
                             Identifier = asset.FileGuid,
                             LastModified = DateTime.Now,
                             Name = filename,
