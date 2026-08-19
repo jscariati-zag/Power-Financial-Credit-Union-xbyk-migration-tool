@@ -23,6 +23,7 @@ namespace ZAGK13Export.Services
             "Blog Images - Updated",
             "Blog Images_June 2024",
             "Banners",
+            "Media",
             "Promo Images"
         };
 
