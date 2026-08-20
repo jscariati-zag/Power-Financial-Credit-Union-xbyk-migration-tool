@@ -138,7 +138,7 @@ namespace ZAGK13Export.Services
                 //if (libraryFolder == "Images")
                 //{
                 //    Console.WriteLine(mediaFileInfo.FileName);
-                //    if (mediaFileInfo.FileName == "ameris-opengraph" || mediaFileInfo.FileName == "open-graph")
+                //    if (mediaFileInfo.FileName == "open-graph")
                 //    {
                 //        var contentItem = ConvertMediaFile(mediaFileInfo).Result;
                 //        if (contentItem != null)

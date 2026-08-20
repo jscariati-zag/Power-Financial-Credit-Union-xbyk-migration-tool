@@ -91,7 +91,6 @@ namespace ZAGXbyKImport.Services
 
         public void AddMediaRedirect(string oldUrl, string newUrl, string type)
         {
-            ////class does not exist on Ameris
             //var provider = RedirectionTableInfo.Provider;
             //var redirect = new RedirectionTableInfo
             //{
