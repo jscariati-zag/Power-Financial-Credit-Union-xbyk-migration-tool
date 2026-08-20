@@ -78,7 +78,6 @@ namespace ZAGK13Export.Converters.Pages
                     { "WebPage_Og_Description", page.GetValue("OpenGraphDescription", "") },
                     { "WebPage_Og_Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("OpenGraphImage", "")) },
                     //{ "Date", page.GetValue("Date", "") },
-                    { "Author", page.GetValue("Author", "") },
                     //{ "Categories", page.GetValue("Category", "") }, //this will surely need adjustment
                     { "Image", _fieldConverters.ConvertMediaItemReference(page.GetValue("BannerImage", "")) },
                     //related posts?
@@ -107,12 +106,33 @@ namespace ZAGK13Export.Converters.Pages
                 newPage.ItemData.Add("ReadingTime", readingTime.Value);
             }
 
+            string author = page.GetValue("Author", "");
+            if (!string.IsNullOrWhiteSpace(author))
+            {
+                newPage.ItemData.Add("Authors", new List<TaxonomyTagReference>
+                {
+                    new TaxonomyTagReference
+                    {
+                        TaxonomyName = "Authors",
+                        TagName = $"Authors_{GetAuthorCodeName(author)}",
+                        TagTitle = author
+                    }
+                });
+            }
+
             newPage.WidgetConfiguration = _commonConverterService.AddRichTextWidgetToConfiguration(
                 newPage.WidgetConfiguration,
                 "EditableArea_01",
                 articleContent);
 
             return newPage;
+        }
+
+        private static readonly Regex NonAlphanumericRegex = new Regex(@"[^A-Za-z0-9]", RegexOptions.Compiled);
+
+        private static string GetAuthorCodeName(string author)
+        {
+            return NonAlphanumericRegex.Replace(author, string.Empty);
         }
 
         // Detects a leading reading time estimate (e.g. "5 MIN. READ", "5 min read") at the

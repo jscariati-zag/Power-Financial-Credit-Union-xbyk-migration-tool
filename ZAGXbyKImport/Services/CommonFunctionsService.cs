@@ -29,6 +29,7 @@ namespace ZAGXbyKImport.Services
     {
         private readonly IConfiguration config;
         private readonly XbyKImport xbyKImport;
+        private readonly Dictionary<string, TaxonomyInfo> _taxonomyCache = new(StringComparer.OrdinalIgnoreCase);
 
         public CommonFunctionsService(IConfiguration config, XbyKImport xbyKImport)
         {
@@ -316,6 +317,19 @@ namespace ZAGXbyKImport.Services
                         }
                         fields.Add(item.Key, webPageReferencesList);
                         break;
+                    case List<TaxonomyTagReference>:
+                        var taxonomyTagReferences = item.Value as List<TaxonomyTagReference>;
+                        List<TagReference> tagReferencesList = new List<TagReference>();
+                        foreach (var taxonomyTagReference in taxonomyTagReferences)
+                        {
+                            var tagInfo = GetOrCreateTag(taxonomyTagReference.TaxonomyName, taxonomyTagReference.TagName, taxonomyTagReference.TagTitle);
+                            if (tagInfo != null)
+                            {
+                                tagReferencesList.Add(new TagReference { Identifier = tagInfo.TagGUID });
+                            }
+                        }
+                        fields.Add(item.Key, tagReferencesList);
+                        break;
                     case string:
                         var itemValue = item.Value as string;
                         fields.Add(item.Key, ConvertTextReferences(itemValue));
@@ -327,6 +341,33 @@ namespace ZAGXbyKImport.Services
             }
 
             return fields;
+        }
+
+        private TagInfo GetOrCreateTag(string taxonomyName, string tagName, string tagTitle)
+        {
+            if (!_taxonomyCache.TryGetValue(taxonomyName, out var taxonomy))
+            {
+                taxonomy = TaxonomyInfo.Provider.Get(taxonomyName);
+                if (taxonomy == null)
+                {
+                    throw new InvalidOperationException($"The '{taxonomyName}' taxonomy does not exist in the target instance. Create it before running the import.");
+                }
+                _taxonomyCache[taxonomyName] = taxonomy;
+            }
+
+            var tag = TagInfo.Provider.Get(tagName);
+            if (tag == null)
+            {
+                tag = new TagInfo
+                {
+                    TagName = tagName,
+                    TagTitle = tagTitle,
+                    TagTaxonomyID = taxonomy.TaxonomyID
+                };
+                TagInfo.Provider.Set(tag);
+            }
+
+            return tag;
         }
 
         public static Page? FindPageByOldGuid(List<Page> pages, Guid oldGuid)

@@ -122,6 +122,13 @@ namespace Common
         public Guid OldGuid { get; set; }
     }
 
+    public class TaxonomyTagReference
+    {
+        public string TaxonomyName { get; set; }
+        public string TagName { get; set; }
+        public string TagTitle { get; set; }
+    }
+
     public class SelectedForm
     {
         public Guid? objectGuid { get; set; }
