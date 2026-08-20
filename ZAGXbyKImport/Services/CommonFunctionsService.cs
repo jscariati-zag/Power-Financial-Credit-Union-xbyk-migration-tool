@@ -89,6 +89,43 @@ namespace ZAGXbyKImport.Services
             }
         }
 
+        private MemoryStream? GetStreamFromLocalMedia(string oldDirectUrl)
+        {
+            if (string.IsNullOrEmpty(oldDirectUrl))
+            {
+                return null;
+            }
+
+            var mediaPath = config.GetValue<string>("MediaPath");
+            if (string.IsNullOrEmpty(mediaPath))
+            {
+                return null;
+            }
+
+            var sourceSite = config.GetValue<string>("SourceSite");
+
+            // OldDirectUrl is shaped like "/{SourceSite}/media/{LibraryFolder}/{relative/file/path}".
+            string path = oldDirectUrl.Split('?')[0];
+            string[] segments = path.Trim('/').Split('/');
+
+            int mediaIndex = Array.FindIndex(segments, s => string.Equals(s, "media", StringComparison.OrdinalIgnoreCase));
+            if (mediaIndex < 0 || mediaIndex + 1 >= segments.Length)
+            {
+                return null;
+            }
+
+            string relativePath = string.Join(Path.DirectorySeparatorChar.ToString(), segments.Skip(mediaIndex + 1));
+            string fullPath = Path.Combine(mediaPath, relativePath);
+
+            if (!File.Exists(fullPath))
+            {
+                return null;
+            }
+
+            byte[] data = File.ReadAllBytes(fullPath);
+            return new MemoryStream(data);
+        }
+
         public void AddMediaRedirect(string oldUrl, string newUrl, string type)
         {
             //var provider = RedirectionTableInfo.Provider;
@@ -142,7 +179,15 @@ namespace ZAGXbyKImport.Services
                     case Asset:
                         var asset = item.Value as Asset;
                         var stream = GetStreamFromUrlAsync(asset.AssetUrl).Result;
-                        if (stream == null) { break; }
+                        if (stream == null)
+                        {
+                            stream = GetStreamFromLocalMedia(contentItem?.OldDirectUrl);
+                        }
+                        if (stream == null)
+                        {
+                            Console.WriteLine($"  ✗ Could not download or locate asset for '{contentItem?.DisplayName}' (AssetUrl: {asset.AssetUrl}, OldDirectUrl: {contentItem?.OldDirectUrl})");
+                            break;
+                        }
                         var filename = Path.GetFileName(new Uri(asset.AssetUrl).AbsolutePath);
                         var assetMetadata = new ContentItemAssetMetadata()
                         {
