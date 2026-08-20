@@ -148,28 +148,34 @@ namespace ZAGK13Export.Converters.Pages
         // Categories can be assigned to a document in two different ways on this site:
         //  1. The native CMS category assignment mechanism (CMS_DocumentCategory binding table),
         //     readable via CategoryInfoProvider.GetDocumentCategories.
-        //  2. A custom "Category" field on custom.BlogDetail that uses the Kentico "Category selector"
+        //  2. A custom "Category" field on custom.BlogDetail that uses a Kentico "Uni selector"
         //     form control, which stores its selection directly as a semicolon-separated list of
-        //     CategoryID values in the field itself (bypassing the native binding table entirely).
+        //     values in the field itself (bypassing the native binding table entirely). Depending on
+        //     configuration, a Uni selector can persist CategoryID, CategoryName (code name), or
+        //     CategoryDisplayName, so all three are attempted when resolving each token.
         // Both sources are checked and merged (de-duplicated) here, since some posts only use one or the other.
-        private static List<TaxonomyTagReference> GetBlogCategoryTagReferences(TreeNode page)
+        private List<TaxonomyTagReference> GetBlogCategoryTagReferences(TreeNode page)
         {
             var references = new List<TaxonomyTagReference>();
             var addedCategoryIds = new HashSet<int>();
+            string siteName = _config.GetValue<string>("SourceSite");
 
             string categoryField = page.GetValue("Category", "");
             if (!string.IsNullOrWhiteSpace(categoryField))
             {
-                var categoryIds = categoryField.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                foreach (var idText in categoryIds)
+                var categoryTokens = categoryField.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var rawToken in categoryTokens)
                 {
-                    if (int.TryParse(idText.Trim(), out int categoryId))
+                    string token = rawToken.Trim();
+                    if (token.Length == 0)
                     {
-                        var category = CategoryInfoProvider.GetCategoryInfo(categoryId);
-                        if (category != null && addedCategoryIds.Add(category.CategoryID))
-                        {
-                            AddBlogCategoryTagReference(category, references);
-                        }
+                        continue;
+                    }
+
+                    var category = ResolveCategory(token, siteName);
+                    if (category != null && addedCategoryIds.Add(category.CategoryID))
+                    {
+                        AddBlogCategoryTagReference(category, references);
                     }
                 }
             }
@@ -184,6 +190,31 @@ namespace ZAGK13Export.Converters.Pages
             }
 
             return references;
+        }
+
+        private static CategoryInfo ResolveCategory(string token, string siteName)
+        {
+            // The Uni selector on this field is configured with "Return column name: CategoryDisplayName",
+            // so tokens are expected to be category display names. The ID/code name checks are kept as a
+            // defensive fallback in case the field ever contains a differently-configured value.
+            var categoryByDisplayName = CategoryInfoProvider.GetCategories()
+                .WhereEquals(nameof(CategoryInfo.CategoryDisplayName), token)
+                .FirstOrDefault();
+            if (categoryByDisplayName != null)
+            {
+                return categoryByDisplayName;
+            }
+
+            if (int.TryParse(token, out int categoryId))
+            {
+                var categoryById = CategoryInfoProvider.GetCategoryInfo(categoryId);
+                if (categoryById != null)
+                {
+                    return categoryById;
+                }
+            }
+
+            return CategoryInfoProvider.GetCategoryInfo(token, siteName);
         }
 
         private static void AddBlogCategoryTagReference(CategoryInfo category, List<TaxonomyTagReference> references)
