@@ -2,6 +2,7 @@
 using CMS.DataEngine;
 using CMS.DocumentEngine;
 using CMS.DocumentEngine.Routing;
+using CMS.Taxonomy;
 using Common;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -114,10 +115,16 @@ namespace ZAGK13Export.Converters.Pages
                     new TaxonomyTagReference
                     {
                         TaxonomyName = "Authors",
-                        TagName = $"Authors_{GetAuthorCodeName(author)}",
+                        TagName = $"Authors_{GetCodeName(author)}",
                         TagTitle = author
                     }
                 });
+            }
+
+            var categoryReferences = GetBlogCategoryTagReferences(page);
+            if (categoryReferences.Any())
+            {
+                newPage.ItemData.Add("Categories", categoryReferences);
             }
 
             newPage.WidgetConfiguration = _commonConverterService.AddRichTextWidgetToConfiguration(
@@ -130,9 +137,38 @@ namespace ZAGK13Export.Converters.Pages
 
         private static readonly Regex NonAlphanumericRegex = new Regex(@"[^A-Za-z0-9]", RegexOptions.Compiled);
 
-        private static string GetAuthorCodeName(string author)
+        private static string GetCodeName(string value)
         {
-            return NonAlphanumericRegex.Replace(author, string.Empty);
+            return NonAlphanumericRegex.Replace(value, string.Empty);
+        }
+
+        // The source site organizes blog categories as children of a "Blog" parent category.
+        // Only those child categories assigned to the document are migrated as "Blog" taxonomy tags.
+        private static List<TaxonomyTagReference> GetBlogCategoryTagReferences(TreeNode page)
+        {
+            var references = new List<TaxonomyTagReference>();
+
+            var documentCategories = CategoryInfoProvider.GetDocumentCategories($"DocumentID = {page.DocumentID}");
+            foreach (CategoryInfo category in documentCategories)
+            {
+                var parentCategory = category.CategoryParentID > 0
+                    ? CategoryInfoProvider.GetCategoryInfo(category.CategoryParentID)
+                    : null;
+
+                if (parentCategory == null || !string.Equals(parentCategory.CategoryDisplayName, "Blog", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                references.Add(new TaxonomyTagReference
+                {
+                    TaxonomyName = "Blog",
+                    TagName = $"Blog_{GetCodeName(category.CategoryDisplayName)}",
+                    TagTitle = category.CategoryDisplayName
+                });
+            }
+
+            return references;
         }
 
         // Detects a leading reading time estimate (e.g. "5 MIN. READ", "5 min read") at the
