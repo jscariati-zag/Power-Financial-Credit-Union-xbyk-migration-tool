@@ -144,31 +144,65 @@ namespace ZAGK13Export.Converters.Pages
 
         // The source site organizes blog categories as children of a "Blog" parent category.
         // Only those child categories assigned to the document are migrated as "Blog" taxonomy tags.
+        //
+        // Categories can be assigned to a document in two different ways on this site:
+        //  1. The native CMS category assignment mechanism (CMS_DocumentCategory binding table),
+        //     readable via CategoryInfoProvider.GetDocumentCategories.
+        //  2. A custom "Category" field on custom.BlogDetail that uses the Kentico "Category selector"
+        //     form control, which stores its selection directly as a semicolon-separated list of
+        //     CategoryID values in the field itself (bypassing the native binding table entirely).
+        // Both sources are checked and merged (de-duplicated) here, since some posts only use one or the other.
         private static List<TaxonomyTagReference> GetBlogCategoryTagReferences(TreeNode page)
         {
             var references = new List<TaxonomyTagReference>();
+            var addedCategoryIds = new HashSet<int>();
+
+            string categoryField = page.GetValue("Category", "");
+            if (!string.IsNullOrWhiteSpace(categoryField))
+            {
+                var categoryIds = categoryField.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                foreach (var idText in categoryIds)
+                {
+                    if (int.TryParse(idText.Trim(), out int categoryId))
+                    {
+                        var category = CategoryInfoProvider.GetCategoryInfo(categoryId);
+                        if (category != null && addedCategoryIds.Add(category.CategoryID))
+                        {
+                            AddBlogCategoryTagReference(category, references);
+                        }
+                    }
+                }
+            }
 
             var documentCategories = CategoryInfoProvider.GetDocumentCategories($"DocumentID = {page.DocumentID}");
             foreach (CategoryInfo category in documentCategories)
             {
-                var parentCategory = category.CategoryParentID > 0
-                    ? CategoryInfoProvider.GetCategoryInfo(category.CategoryParentID)
-                    : null;
-
-                if (parentCategory == null || !string.Equals(parentCategory.CategoryDisplayName, "Blog", StringComparison.OrdinalIgnoreCase))
+                if (addedCategoryIds.Add(category.CategoryID))
                 {
-                    continue;
+                    AddBlogCategoryTagReference(category, references);
                 }
-
-                references.Add(new TaxonomyTagReference
-                {
-                    TaxonomyName = "Blog",
-                    TagName = $"Blog_{GetCodeName(category.CategoryDisplayName)}",
-                    TagTitle = category.CategoryDisplayName
-                });
             }
 
             return references;
+        }
+
+        private static void AddBlogCategoryTagReference(CategoryInfo category, List<TaxonomyTagReference> references)
+        {
+            var parentCategory = category.CategoryParentID > 0
+                ? CategoryInfoProvider.GetCategoryInfo(category.CategoryParentID)
+                : null;
+
+            if (parentCategory == null || !string.Equals(parentCategory.CategoryDisplayName, "Blog", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            references.Add(new TaxonomyTagReference
+            {
+                TaxonomyName = "Blog",
+                TagName = $"Blog_{GetCodeName(category.CategoryDisplayName)}",
+                TagTitle = category.CategoryDisplayName
+            });
         }
 
         // Detects a leading reading time estimate (e.g. "5 MIN. READ", "5 min read") at the
